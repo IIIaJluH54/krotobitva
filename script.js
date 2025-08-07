@@ -147,3 +147,22 @@ setInterval(saveGame, 10000);
 
 // Загрузка при старте
 window.onload = loadGame;
+// Слушаем нажатия клавиш для активации админки
+window.addEventListener("keydown", function (e) {
+  // Добавляем символ к коду
+  if (e.key.length === 1 && e.key.match(/[a-zA-Z]/i)) {
+    adminCode += e.key.toUpperCase();
+    // Оставляем только последние 4 символа
+    if (adminCode.length > ADMIN_SECRET.length) {
+      adminCode = adminCode.slice(-ADMIN_SECRET.length);
+    }
+    // Проверяем код
+    if (adminCode === ADMIN_SECRET) {
+      showAdminPanel();
+      adminCode = ""; // сбрасываем
+    }
+  } else {
+    // Если не буква — сбрасываем (опционально)
+    // adminCode = ""; // раскомментировать, если хочешь строгий ввод
+  }
+});
