@@ -1,4 +1,3 @@
-/* Шрифты и сброс */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap');
 
 * {
@@ -17,7 +16,6 @@ body {
   padding: 20px;
 }
 
-/* Анимированный фон (подземный стиль) */
 .background {
   position: fixed;
   top: 0;
@@ -50,13 +48,6 @@ body {
   z-index: 10;
 }
 
-/* Заголовок */
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-  position: relative;
-}
-
 .neon {
   color: #fff;
   text-shadow: 
@@ -76,7 +67,6 @@ body {
   text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
 }
 
-/* Статистика */
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -118,7 +108,6 @@ body {
   color: #ccc;
 }
 
-/* Крот */
 .krot-area {
   margin: 20px 0;
   display: flex;
@@ -140,7 +129,6 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
-/* Кнопки */
 .actions {
   display: flex;
   flex-direction: column;
@@ -174,7 +162,6 @@ body {
   box-shadow: 0 6px 15px rgba(255, 215, 0, 0.3);
 }
 
-/* Улучшения */
 .section-title {
   font-size: 1.2em;
   color: #FFD700;
@@ -245,7 +232,6 @@ body {
   white-space: nowrap;
 }
 
-/* Скины */
 .skin-list {
   display: flex;
   justify-content: center;
@@ -273,64 +259,7 @@ body {
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
-/* Админка */
-.admin-panel {
-  margin-top: 30px;
-  font-size: 0.9em;
-  color: #777;
-}
-
-.admin-panel button {
-  font-size: 0.9em;
-  padding: 6px 10px;
-  margin: 4px;
-  background: #333;
-  color: #aaa;
-}
-
-.admin-panel button:hover {
-  background: #555;
-  color: #fff;
-}
-
-/* Эффект "всплывающего числа" */
-@keyframes pop-up {
-  0% {
-    opacity: 0;
-    transform: translateY(0);
-  }
-  50% {
-    opacity: 1;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-40px);
-  }
-}
-
-/* Адаптивность */
-@media (max-width: 480px) {
-  .container {
-    padding: 16px;
-    border-radius: 16px;
-  }
-
-  .neon {
-    font-size: 1.6em;
-  }
-
-  .krot {
-    width: 120px;
-    height: 120px;
-  }
-
-  .upgrade-card {
-    padding: 12px;
-  }
-}
-/* === СКРЫТАЯ АДМИН-ПАНЕЛЬ === */
-
+/* === АДМИН-ПАНЕЛЬ === */
 .admin-panel-hidden {
   position: fixed;
   top: -100%;
@@ -353,6 +282,18 @@ body {
   top: 20px;
   opacity: 1;
   pointer-events: all;
+  animation: adminSlideIn 0.4s ease forwards;
+}
+
+@keyframes adminSlideIn {
+  from {
+    top: -100%;
+    opacity: 0;
+  }
+  to {
+    top: 20px;
+    opacity: 1;
+  }
 }
 
 .admin-header {
@@ -425,7 +366,11 @@ body {
   color: #ffaaaa !important;
 }
 
-/* Подложка */
+.btn-warning {
+  background: #554400 !important;
+  color: #ffdd88 !important;
+}
+
 .admin-overlay {
   position: fixed;
   top: 0;
@@ -444,18 +389,14 @@ body {
   pointer-events: all;
 }
 
-/* Анимация появления */
-@keyframes adminSlideIn {
-  from {
-    top: -100%;
-    opacity: 0;
+/* Адаптив */
+@media (max-width: 480px) {
+  .container {
+    padding: 16px;
+    border-radius: 16px;
   }
-  to {
-    top: 20px;
-    opacity: 1;
+  .krot {
+    width: 120px;
+    height: 120px;
   }
-}
-
-.admin-panel-visible {
-  animation: adminSlideIn 0.4s ease forwards;
 }
