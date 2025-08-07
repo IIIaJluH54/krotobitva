@@ -1,11 +1,12 @@
-// Игровые данные
+// Игровые переменные
 let coins = 0;
 let clickPower = 1;
 let autoCPS = 0;
 let lastSave = Date.now();
 let dailyClaimed = false;
-let adminCode = ""; // для ввода кода
-const ADMIN_SECRET = "KROT"; // код для активации
+let adminCode = "";
+const ADMIN_SECRET = "KROT";
+
 // Загрузка прогресса
 function loadGame() {
   const saved = localStorage.getItem("krotobitva");
@@ -16,11 +17,18 @@ function loadGame() {
     autoCPS = data.autoCPS || 0;
     lastSave = data.lastSave || Date.now();
     dailyClaimed = data.dailyClaimed || false;
-    if (data.krotSrc) document.getElementById("krot").src = data.krotSrc;
+    const krotSrc = data.krotSrc ? `assets/${data.krotSrc}` : "assets/krot.png";
+    document.getElementById("krot").src = krotSrc;
+
+    // Обновляем активный скин
+    document.querySelectorAll(".skin").forEach(img => {
+      img.classList.remove("active");
+      if (img.src.includes(data.krotSrc)) img.classList.add("active");
+    });
   }
   updateDisplay();
 
-  // Восстановление автогенерации с учётом времени
+  // Восстановление монет за время отсутствия
   const now = Date.now();
   const secondsPassed = (now - lastSave) / 1000;
   if (secondsPassed > 0 && autoCPS > 0) {
@@ -30,10 +38,10 @@ function loadGame() {
   }
 }
 
-// Сохранение прогресса
+// Сохранение
 function saveGame() {
   const data = {
-    coins,
+    coins: Math.floor(coins),
     clickPower,
     autoCPS,
     lastSave: Date.now(),
@@ -47,8 +55,8 @@ function saveGame() {
 function updateDisplay() {
   document.getElementById("coins").textContent = Math.floor(coins);
   document.getElementById("clickPower").textContent = clickPower;
-  document.getElementById("autoCPS").textContent = autoCPS;
-  document.getElementById("clickPowerText").textContent = clickPower; // новая строка
+  document.getElementById("autoCPS").textContent = Math.floor(autoCPS);
+  document.getElementById("clickPowerText").textContent = clickPower;
   document.getElementById("daily-btn").disabled = dailyClaimed;
 }
 
@@ -58,7 +66,6 @@ document.getElementById("krot").addEventListener("click", () => {
   updateDisplay();
   saveGame();
 
-  // Эффект всплывающего числа
   const pop = document.createElement("div");
   pop.textContent = `+${clickPower}`;
   pop.style.cssText = `
@@ -74,7 +81,7 @@ document.getElementById("krot").addEventListener("click", () => {
   setTimeout(() => document.body.removeChild(pop), 1000);
 });
 
-// Покупка улучшений
+// Улучшения
 function buyUpgrade(type, cost) {
   if (coins >= cost) {
     coins -= cost;
@@ -87,7 +94,7 @@ function buyUpgrade(type, cost) {
   }
 }
 
-// Открытие сундука
+// Сундук
 function openChest() {
   const rewards = [
     { msg: "10 монет", value: 10 },
@@ -114,74 +121,45 @@ function claimDaily() {
   dailyClaimed = true;
   updateDisplay();
   saveGame();
-  alert("Вы получили 100 монет! Возвращайтесь завтра.");
+  alert("🎉 Вы получили 100 монет! Возвращайтесь завтра.");
 }
 
 // Смена скина
 function equipSkin(src) {
   document.getElementById("krot").src = src;
+  document.querySelectorAll(".skin").forEach(img => img.classList.remove("active"));
+  event.target.classList.add("active");
   saveGame();
 }
 
-// Админ-команды
-function adminAddCoins(amount) {
-  coins += amount;
-  updateDisplay();
-  saveGame();
-}
+// === АДМИН-ПАНЕЛЬ ===
 
-function adminOpenChest() {
-  openChest();
-}
-
-// Автосохранение и автогенерация
-setInterval(() => {
-  if (autoCPS > 0) {
-    coins += autoCPS / 10; // 10 раз в секунду
-    updateDisplay();
-  }
-}, 100);
-
-// Авто-сохранение каждые 10 сек
-setInterval(saveGame, 10000);
-
-// Загрузка при старте
-window.onload = loadGame;
-// Слушаем нажатия клавиш для активации админки
+// Активация по коду
 window.addEventListener("keydown", function (e) {
-  // Добавляем символ к коду
   if (e.key.length === 1 && e.key.match(/[a-zA-Z]/i)) {
     adminCode += e.key.toUpperCase();
-    // Оставляем только последние 4 символа
     if (adminCode.length > ADMIN_SECRET.length) {
       adminCode = adminCode.slice(-ADMIN_SECRET.length);
     }
-    // Проверяем код
     if (adminCode === ADMIN_SECRET) {
       showAdminPanel();
-      adminCode = ""; // сбрасываем
+      adminCode = "";
     }
-  } else {
-    // Если не буква — сбрасываем (опционально)
-    // adminCode = ""; // раскомментировать, если хочешь строгий ввод
   }
 });
-// Показать панель
+
 function showAdminPanel() {
   document.getElementById("adminPanel").classList.add("admin-panel-visible");
   document.getElementById("adminOverlay").classList.add("active");
-  // Запрещаем скролл
   document.body.style.overflow = "hidden";
 }
 
-// Скрыть панель
 function toggleAdminPanel() {
   document.getElementById("adminPanel").classList.remove("admin-panel-visible");
   document.getElementById("adminOverlay").classList.remove("active");
-  document.body.style.overflow = ""; // возвращаем скролл
+  document.body.style.overflow = "";
 }
 
-// Админ-функции
 function adminAddCoins(amount) {
   coins += amount;
   updateDisplay();
@@ -190,70 +168,61 @@ function adminAddCoins(amount) {
 }
 
 function adminOpenChest() {
-  openChest(); // используем существующую функцию
+  openChest();
 }
 
 function adminGiveSkin(index) {
-  const skins = [
-    "assets/krot.png",
-    "assets/krot_hat.png",
-    "assets/krot_glasses.png"
-  ];
+  const skins = ["assets/krot.png", "assets/krot_hat.png", "assets/krot_glasses.png"];
   if (skins[index]) {
     document.getElementById("krot").src = skins[index];
+    document.querySelectorAll(".skin").forEach(img => img.classList.remove("active"));
+    document.querySelectorAll(".skin")[index].classList.add("active");
     saveGame();
-    showToast(`Скин ${index} активирован`);
+    showToast(`Скин ${index + 1} активирован`);
   }
 }
 
 function unlockAllSkins() {
-  // В реальной игре можно добавить систему "разблокировано"
-  // Здесь просто показываем уведомление
-  const skinImgs = document.querySelectorAll(".skin");
-  skinImgs.forEach(img => {
+  document.querySelectorAll(".skin").forEach(img => {
     img.style.filter = "none";
-    img.title = "Разблокирован";
   });
   showToast("Все скины разблокированы!");
 }
 
 function resetProgress() {
-  if (confirm("Вы уверены, что хотите сбросить весь прогресс?")) {
+  if (confirm("Сбросить весь прогресс?")) {
     localStorage.removeItem("krotobitva");
-    location.reload(); // перезагрузка с чистого листа
+    location.reload();
   }
 }
 
-// Всплывающее уведомление (опционально)
 function showToast(message) {
   const toast = document.createElement("div");
   toast.textContent = message;
   toast.style.cssText = `
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #333;
-    color: #FFD700;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 0.9em;
-    z-index: 2000;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transition: opacity 0.3s;
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: #333; color: #FFD700; padding: 10px 20px; border-radius: 8px;
+    z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); opacity: 0;
+    transition: opacity 0.3s; font-size: 0.9em;
   `;
   document.body.appendChild(toast);
-  setTimeout(() => (toast.style.opacity = "1"), 100);
+  setTimeout(() => toast.style.opacity = "1", 100);
   setTimeout(() => {
     toast.style.opacity = "0";
     setTimeout(() => document.body.removeChild(toast), 300);
   }, 2000);
 }
-function updateDisplay() {
-  document.getElementById("coins").textContent = Math.floor(coins);
-  document.getElementById("clickPower").textContent = clickPower;
-  document.getElementById("autoCPS").textContent = Math.floor(autoCPS);
-  document.getElementById("clickPowerText").textContent = clickPower;
-  document.getElementById("daily-btn").disabled = dailyClaimed;
-}
+
+// Автогенерация
+setInterval(() => {
+  if (autoCPS > 0) {
+    coins += autoCPS / 10;
+    updateDisplay();
+  }
+}, 100);
+
+// Автосохранение
+setInterval(saveGame, 10000);
+
+// Загрузка
+window.onload = loadGame;
