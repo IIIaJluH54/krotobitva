@@ -64,16 +64,29 @@ body::before {
   font-size: 1.5em;
 }
 
-.card button {
+.card p {
+  color: #aaa;
+  margin: 10px 0;
+}
+
+#connectBtn {
   background: #0f0;
   color: #000;
   border: none;
-  padding: 12px 24px;
+  padding: 14px 28px;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
   font-family: 'Orbitron', sans-serif;
+  font-size: 1.1em;
   margin-top: 20px;
+  transition: all 0.3s;
+}
+
+#connectBtn:hover {
+  background: #00ff00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 255, 0, 0.3);
 }
 
 /* Игровой экран */
@@ -97,6 +110,7 @@ header h1, header h2 {
   border: none;
   color: #0f0;
   font-size: 1.2em;
+  cursor: pointer;
 }
 
 .balance {
@@ -141,6 +155,10 @@ header h1, header h2 {
   cursor: pointer;
 }
 
+.bottom-nav button:hover {
+  text-shadow: 0 0 10px #0f0;
+}
+
 /* Улучшения */
 .upgrade-item {
   background: #001100;
@@ -158,11 +176,13 @@ header h1, header h2 {
   border: none;
   border-radius: 4px;
   font-size: 0.9em;
+  cursor: pointer;
 }
 
 /* Награды и профиль */
 #rewards p, #profile p {
   margin: 10px 0;
+  color: #ccc;
 }
 
 /* Скины */
@@ -180,6 +200,12 @@ header h1, header h2 {
   border-radius: 10px;
   border: 3px solid transparent;
   cursor: pointer;
+  transition: all 0.3s;
+}
+
+.skin-list img:hover {
+  border-color: #0f0;
+  transform: scale(1.1);
 }
 
 .skin-list img.active {
