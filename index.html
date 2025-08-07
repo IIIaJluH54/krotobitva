@@ -8,12 +8,12 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="cyber">
-  <!-- Экран регистрации -->
-  <div id="registerScreen" class="screen">
+  <!-- Главная страница (Telegram-регистрация) -->
+  <div id="telegramScreen" class="screen">
     <div class="card">
       <h1>🐹 Крото Битва</h1>
-      <input id="username" placeholder="Введите имя" />
-      <button onclick="register()">Войти в нору</button>
+      <p>Добро пожаловать в игру!</p>
+      <button onclick="connectTelegram()">Войти через Telegram</button>
     </div>
   </div>
 
@@ -29,48 +29,55 @@
     </div>
 
     <nav class="bottom-nav">
-      <button onclick="openTab('upgrades')">🔧</button>
-      <button onclick="openTab('rewards')">🎁</button>
-      <button onclick="openTab('profile')">👤</button>
-      <button onclick="openTab('admin')" class="admin-btn">🛠️</button>
+      <button onclick="switchPage('upgrades')">🔧</button>
+      <button onclick="switchPage('rewards')">🎁</button>
+      <button onclick="switchPage('profile')">👤</button>
     </nav>
   </div>
 
-  <!-- Меню: Улучшения -->
-  <div id="upgrades" class="menu hidden">
-    <h2>Улучшения</h2>
+  <!-- Улучшения -->
+  <div id="upgrades" class="screen hidden page">
+    <header>
+      <button onclick="switchPage('game')" class="back">←</button>
+      <h2>Улучшения</h2>
+    </header>
     <div id="upgradesList"></div>
-    <button onclick="back()">← Назад</button>
   </div>
 
-  <!-- Меню: Награды -->
-  <div id="rewards" class="menu hidden">
-    <h2>Награды</h2>
+  <!-- Награды -->
+  <div id="rewards" class="screen hidden page">
+    <header>
+      <button onclick="switchPage('game')" class="back">←</button>
+      <h2>Награды</h2>
+    </header>
     <button id="dailyBtn" onclick="claimDaily()">Ежедневная награда</button>
     <p id="dailyTimer"></p>
     <button id="chestBtn" onclick="openChest()">Открыть сундук</button>
     <p id="chestTimer"></p>
-    <button onclick="back()">← Назад</button>
   </div>
 
-  <!-- Меню: Профиль -->
-  <div id="profile" class="menu hidden">
-    <h2>Профиль</h2>
+  <!-- Профиль -->
+  <div id="profile" class="screen hidden page">
+    <header>
+      <button onclick="switchPage('game')" class="back">←</button>
+      <h2>Профиль</h2>
+    </header>
     <p>Игрок: <b id="profileName"></b></p>
     <p>Монет: <b id="profileCoins"></b></p>
     <p>Алмазов: <b id="profileDiamonds"></b></p>
     <div class="skin-list" id="skinList"></div>
-    <button onclick="back()">← Назад</button>
   </div>
 
-  <!-- Меню: Админ-панель -->
-  <div id="admin" class="menu hidden">
-    <h2>🛠️ Админ-панель</h2>
+  <!-- Админ-панель (скрыта) -->
+  <div id="admin" class="screen hidden page">
+    <header>
+      <button onclick="switchPage('game')" class="back">←</button>
+      <h2>🛠️ Админ-панель</h2>
+    </header>
     <button onclick="adminAddCoins(1000)">+1000 монет</button>
     <button onclick="adminAddDiamonds(10)">+10 алмазов</button>
     <button onclick="adminForceChest()">Принудительно открыть сундук</button>
     <button onclick="resetProgress()" class="danger">Сбросить прогресс</button>
-    <button onclick="back()">← Назад</button>
   </div>
 
   <!-- Уведомления -->
