@@ -8,17 +8,8 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="cyber">
-  <!-- Экран входа -->
-  <div id="telegramScreen" class="screen">
-    <div class="card">
-      <h1>🐹 Крото Битва</h1>
-      <p>Добро пожаловать в подземную битву!</p>
-      <button id="connectBtn" onclick="connectTelegram()">Войти через Telegram</button>
-    </div>
-  </div>
-
   <!-- Игровой экран -->
-  <div id="gameScreen" class="screen hidden">
+  <div id="gameScreen" class="screen">
     <header>
       <h1>Крото Битва</h1>
       <div class="balance">💰 <span id="coins">0</span> 💎 <span id="diamonds">0</span></div>
@@ -62,7 +53,6 @@
       <button class="back" onclick="switchPage('game')">←</button>
       <h2>Профиль</h2>
     </header>
-    <p>Игрок: <b id="profileName">—</b></p>
     <p>Монет: <b id="profileCoins">0</b></p>
     <p>Алмазов: <b id="profileDiamonds">0</b></p>
     <div class="skin-list" id="skinList"></div>
