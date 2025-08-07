@@ -166,3 +166,94 @@ window.addEventListener("keydown", function (e) {
     // adminCode = ""; // раскомментировать, если хочешь строгий ввод
   }
 });
+// Показать панель
+function showAdminPanel() {
+  document.getElementById("adminPanel").classList.add("admin-panel-visible");
+  document.getElementById("adminOverlay").classList.add("active");
+  // Запрещаем скролл
+  document.body.style.overflow = "hidden";
+}
+
+// Скрыть панель
+function toggleAdminPanel() {
+  document.getElementById("adminPanel").classList.remove("admin-panel-visible");
+  document.getElementById("adminOverlay").classList.remove("active");
+  document.body.style.overflow = ""; // возвращаем скролл
+}
+
+// Админ-функции
+function adminAddCoins(amount) {
+  coins += amount;
+  updateDisplay();
+  saveGame();
+  showToast(`+${amount} монет`);
+}
+
+function adminOpenChest() {
+  openChest(); // используем существующую функцию
+}
+
+function adminGiveSkin(index) {
+  const skins = [
+    "assets/krot.png",
+    "assets/krot_hat.png",
+    "assets/krot_glasses.png"
+  ];
+  if (skins[index]) {
+    document.getElementById("krot").src = skins[index];
+    saveGame();
+    showToast(`Скин ${index} активирован`);
+  }
+}
+
+function unlockAllSkins() {
+  // В реальной игре можно добавить систему "разблокировано"
+  // Здесь просто показываем уведомление
+  const skinImgs = document.querySelectorAll(".skin");
+  skinImgs.forEach(img => {
+    img.style.filter = "none";
+    img.title = "Разблокирован";
+  });
+  showToast("Все скины разблокированы!");
+}
+
+function resetProgress() {
+  if (confirm("Вы уверены, что хотите сбросить весь прогресс?")) {
+    localStorage.removeItem("krotobitva");
+    location.reload(); // перезагрузка с чистого листа
+  }
+}
+
+// Всплывающее уведомление (опционально)
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #FFD700;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    z-index: 2000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s;
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => (toast.style.opacity = "1"), 100);
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => document.body.removeChild(toast), 300);
+  }, 2000);
+}
+function updateDisplay() {
+  document.getElementById("coins").textContent = Math.floor(coins);
+  document.getElementById("clickPower").textContent = clickPower;
+  document.getElementById("autoCPS").textContent = Math.floor(autoCPS);
+  document.getElementById("clickPowerText").textContent = clickPower;
+  document.getElementById("daily-btn").disabled = dailyClaimed;
+}
