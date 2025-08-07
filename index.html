@@ -4,45 +4,78 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Крото Битва</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="background"></div>
+
   <div class="container">
-    <h1>🐹 Крото Битва</h1>
-    <div class="stats">
-      <p>Монеты: <span id="coins">0</span></p>
-      <p>Сила клика: <span id="clickPower">1</span></p>
-      <p>Автогенерация: <span id="autoCPS">0</span>/сек</p>
+    <header class="header">
+      <h1><span class="neon">🐹 Крото Битва</span></h1>
+      <div class="coin-display">
+        💰 <span id="coins">0</span>
+      </div>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="label">Сила клика</span>
+        <span class="value" id="clickPower">1</span>
+      </div>
+      <div class="stat-card">
+        <span class="label">Генерация</span>
+        <span class="value" id="autoCPS">0</span><span class="unit">/с</span>
+      </div>
     </div>
 
     <div class="krot-area">
       <img id="krot" src="assets/krot.png" alt="Крот" class="krot" />
     </div>
 
+    <div class="actions">
+      <button class="btn-main" onclick="openChest()">🎁 Открыть сундук</button>
+      <button class="btn-daily" id="daily-btn" onclick="claimDaily()">📅 Ежедневная награда</button>
+    </div>
+
     <div class="shop">
-      <h2>Магазин</h2>
-      <button onclick="buyUpgrade('click', 10)">Увеличить клик (+1) — 10 монет</button>
-      <button onclick="buyUpgrade('auto', 50)">Автогенератор (+1/сек) — 50 монет</button>
-    </div>
-
-    <div class="rewards">
-      <h2>Награды</h2>
-      <button id="daily-btn" onclick="claimDaily()">Получить ежедневную награду</button>
-      <button onclick="openChest()">Открыть сундук 🎁</button>
-    </div>
-
-    <div class="skins">
-      <h2>Скины крота</h2>
-      <div class="skin-list">
-        <img src="assets/krot.png" onclick="equipSkin('assets/krot.png')" title="Обычный" />
-        <img src="assets/krot_hat.png" onclick="equipSkin('assets/krot_hat.png')" title="С кепкой" />
-        <img src="assets/krot_glasses.png" onclick="equipSkin('assets/krot_glasses.png')" title="С очками" />
+      <h2 class="section-title">🔧 Улучшения</h2>
+      <div class="upgrade-grid">
+        <div class="upgrade-card" onclick="buyUpgrade('click', 10)">
+          <div class="icon">👆</div>
+          <div class="info">
+            <strong>+1 к клику</strong>
+            <small>Сила: <span id="clickPowerText">1</span></small>
+          </div>
+          <div class="cost">10 💰</div>
+        </div>
+        <div class="upgrade-card" onclick="buyUpgrade('auto', 50)">
+          <div class="icon">⚙️</div>
+          <div class="info">
+            <strong>Автогенератор</strong>
+            <small>+1 монета/сек</small>
+          </div>
+          <div class="cost">50 💰</div>
+        </div>
       </div>
     </div>
 
-    <div class="admin" style="margin-top: 20px; font-size: 0.9em; color: #aaa;">
-      <button onclick="adminAddCoins(1000)">[АДМИН] +1000 монет</button>
-      <button onclick="adminOpenChest()">[АДМИН] Открыть сундук</button>
+    <div class="skins">
+      <h2 class="section-title">🎨 Скины крота</h2>
+      <div class="skin-list">
+        <img src="assets/krot.png" onclick="equipSkin('assets/krot.png')" class="skin active" title="Обычный" />
+        <img src="assets/krot_hat.png" onclick="equipSkin('assets/krot_hat.png')" class="skin" title="С кепкой" />
+        <img src="assets/krot_glasses.png" onclick="equipSkin('assets/krot_glasses.png')" class="skin" title="С очками" />
+      </div>
+    </div>
+
+    <!-- Админка (скрыта по умолчанию, можно убрать в релизе) -->
+    <div class="admin-panel">
+      <details>
+        <summary style="color:#aaa; cursor:pointer;">🛠️ Админ-панель</summary>
+        <button onclick="adminAddCoins(1000)">+1000 монет</button>
+        <button onclick="adminOpenChest()">Открыть сундук</button>
+      </details>
     </div>
   </div>
 
