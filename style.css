@@ -1,3 +1,6 @@
+/* Шрифты и сброс */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -5,82 +8,324 @@
 }
 
 body {
-  background-color: #121212;
-  color: #ffffff;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  text-align: center;
+  font-family: 'Inter', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
   padding: 20px;
+}
+
+/* Анимированный фон (подземный стиль) */
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.05), transparent 25%),
+    radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.05), transparent 30%),
+    linear-gradient(135deg, #141414 0%, #1a1a1a 50%, #121212 100%);
+  z-index: -1;
+  pointer-events: none;
+  animation: slowGlow 8s infinite alternate;
+}
+
+@keyframes slowGlow {
+  0% { opacity: 0.6; }
+  100% { opacity: 0.8; }
 }
 
 .container {
-  max-width: 500px;
+  max-width: 480px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px;
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid #333;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+/* Заголовок */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.neon {
+  color: #fff;
+  text-shadow: 
+    0 0 5px rgba(255, 215, 0, 0.4),
+    0 0 10px rgba(255, 215, 0, 0.3),
+    0 0 20px rgba(255, 215, 0, 0.2);
+  font-size: 1.8em;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.coin-display {
+  font-size: 1.4em;
+  font-weight: 600;
+  color: #FFD700;
+  margin-top: 8px;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+/* Статистика */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
   background: #1e1e1e;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s;
 }
 
-h1 {
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.1);
+  border-color: #FFD700;
+}
+
+.label {
+  font-size: 0.8em;
+  color: #aaa;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-size: 1.3em;
+  font-weight: 700;
   color: #FFD700;
-  margin-bottom: 20px;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
-.stats {
-  margin: 15px 0;
+.unit {
+  font-size: 0.9em;
   color: #ccc;
 }
 
+/* Крот */
 .krot-area {
   margin: 20px 0;
+  display: flex;
+  justify-content: center;
 }
 
 .krot {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   cursor: pointer;
-  transition: transform 0.1s;
   border-radius: 50%;
+  transition: all 0.15s ease;
+  border: 4px solid transparent;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 
 .krot:active {
-  transform: scale(0.9);
+  transform: scale(0.88);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
-button {
-  background: #FFD700;
-  color: #000;
+/* Кнопки */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.btn-main, .btn-daily {
+  padding: 14px;
+  font-size: 1.1em;
+  font-weight: 600;
   border: none;
-  padding: 10px 15px;
-  margin: 5px;
-  border-radius: 8px;
-  font-weight: bold;
+  border-radius: 14px;
   cursor: pointer;
   transition: all 0.3s;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-button:hover {
-  background: #FFC107;
+.btn-main {
+  background: linear-gradient(145deg, #FFD700, #FFC107);
+  color: #000;
+}
+
+.btn-daily {
+  background: linear-gradient(145deg, #4CAF50, #388E3C);
+  color: white;
+}
+
+.btn-main:hover, .btn-daily:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 6px 15px rgba(255, 215, 0, 0.3);
 }
 
-button:active {
-  transform: translateY(0);
+/* Улучшения */
+.section-title {
+  font-size: 1.2em;
+  color: #FFD700;
+  margin: 24px 0 16px 0;
+  text-align: center;
+  font-weight: 600;
+  position: relative;
 }
 
-.skins .skin-list img {
+.section-title::after {
+  content: "";
+  display: block;
   width: 60px;
-  height: 60px;
-  margin: 5px;
-  border-radius: 10px;
-  border: 2px solid transparent;
+  height: 3px;
+  background: #FFD700;
+  margin: 8px auto;
+  border-radius: 2px;
+}
+
+.upgrade-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.upgrade-card {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.upgrade-card:hover {
+  background: #252525;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  border-color: #FFD700;
+}
+
+.icon {
+  font-size: 1.5em;
+}
+
+.info {
+  flex: 1;
+  text-align: left;
+}
+
+.info strong {
+  color: #fff;
+  font-size: 1em;
+}
+
+.info small {
+  color: #aaa;
+  font-size: 0.9em;
+}
+
+.cost {
+  font-weight: 700;
+  color: #FFD700;
+  font-size: 1em;
+  white-space: nowrap;
+}
+
+/* Скины */
+.skin-list {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.skin {
+  width: 70px;
+  height: 70px;
+  border-radius: 16px;
+  border: 3px solid transparent;
   cursor: pointer;
   transition: all 0.3s;
 }
 
-.skins .skin-list img:hover {
+.skin:hover {
   border-color: #FFD700;
   transform: scale(1.1);
+}
+
+.skin.active {
+  border-color: #FFD700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Админка */
+.admin-panel {
+  margin-top: 30px;
+  font-size: 0.9em;
+  color: #777;
+}
+
+.admin-panel button {
+  font-size: 0.9em;
+  padding: 6px 10px;
+  margin: 4px;
+  background: #333;
+  color: #aaa;
+}
+
+.admin-panel button:hover {
+  background: #555;
+  color: #fff;
+}
+
+/* Эффект "всплывающего числа" */
+@keyframes pop-up {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+  .container {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .neon {
+    font-size: 1.6em;
+  }
+
+  .krot {
+    width: 120px;
+    height: 120px;
+  }
+
+  .upgrade-card {
+    padding: 12px;
+  }
 }
