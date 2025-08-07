@@ -1,275 +1,250 @@
+// Данные
+let user = null;
 let coins = 0;
 let diamonds = 0;
 let clickPower = 1;
 let autoCPS = 0;
 let lastSave = Date.now();
-let dailyClaimed = false;
-let adminCode = "";
-const ADMIN_SECRET = "KROT";
 
-let seasonPoints = 0;
-let seasonLevel = 1;
-let seasonStart = Date.now();
-let dungeon = { level: 1, maxLevel: 5, lastReset: 0 };
+let dailyRewardClaimedAt = 0;
+let chestClaimedAt = 0;
 
-let dailyQuests = {
-  clicks: { current: 0, goal: 100, reward: 500, claimed: false },
-  chests: { current: 0, goal: 3, reward: "chest", claimed: false },
-  coins: { current: 0, goal: 5000, reward: 2, claimed: false }
-};
-
-let clan = {
-  name: "Грызуны 88",
-  members: 12,
-  tasks: {
-    coins: { current: 1200000, goal: 10000000, claimed: false }
-  }
-};
-
-let leaderboard = [
-  { name: "Крот-Мастер", coins: 1250000 },
-  { name: "DigDug", coins: 980000 },
-  { name: "Землерой", coins: 750000 }
+let upgrades = [
+  { name: "Когти", desc: "Сила клика +1", cost: 10, type: "click", level: 0 },
+  { name: "Кирка", desc: "Сила клика +1", cost: 25, type: "click", level: 0 },
+  { name: "Автогенератор", desc: "+1 монета/сек", cost: 50, type: "auto", level: 0 },
+  { name: "Ядерный реактор", desc: "+5 монет/сек", cost: 500, type: "auto", level: 0 },
+  { name: "Лазерные глаза", desc: "Сила клика +5", cost: 100, type: "click", level: 0 },
+  { name: "Гравитационный бур", desc: "Сила клика +10", cost: 500, type: "click", level: 0 },
+  { name: "Нано-генератор", desc: "+10 монет/сек", cost: 1000, type: "auto", level: 0 },
+  { name: "Кибер-лапы", desc: "Сила клика x2", cost: 10000, type: "click", level: 0 },
+  { name: "Чёрная дыра", desc: "+100 монет/сек", cost: 50000, type: "auto", level: 0 },
+  { name: "Квантовый крот", desc: "Сила клика x5", cost: 50000, type: "click", level: 0 }
 ];
 
-let chatMessages = [
-  { user: "Грызлик", msg: "Привет! Кто в подземелье?" },
-  { user: "КротоБот", msg: "🎉 Новый сезон: Подземный бунт!" }
+let skins = [
+  { src: "assets/krot.png", name: "Обычный", unlocked: true },
+  { src: "assets/krot_hat.png", name: "Каска", unlocked: false },
+  { src: "assets/krot_glasses.png", name: "Очки", unlocked: false }
 ];
 
-let currentTheme = "dark";
+let currentSkin = 0;
 
-const sounds = {
-  click: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3"),
-  chest: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3"),
-  levelup: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3")
-};
-
-function vibrate() {
-  if ("vibrate" in navigator) navigator.vibrate(50);
-}
-
+// Загрузка
 function loadGame() {
-  const saved = localStorage.getItem("krotobitva_v2");
+  const saved = localStorage.getItem("krotobitva_v3");
   if (saved) {
     const data = JSON.parse(saved);
     Object.assign(this, data);
+    // Восстановление автогенерации
     const secondsPassed = (Date.now() - lastSave) / 1000;
     if (autoCPS > 0) coins += autoCPS * secondsPassed;
+    coins = Math.floor(coins);
   }
-  updateDisplay();
-  applyTheme();
+  renderUpgrades();
+  renderSkins();
 }
 
+// Сохранение
 function saveGame() {
-  const data = { coins, diamonds, clickPower, autoCPS, lastSave: Date.now(), dailyClaimed,
-    seasonPoints, seasonLevel, seasonStart, dailyQuests, clan, chatMessages, currentTheme };
-  localStorage.setItem("krotobitva_v2", JSON.stringify(data));
+  const data = {
+    coins, diamonds, clickPower, autoCPS, lastSave: Date.now(),
+    dailyRewardClaimedAt, chestClaimedAt, upgrades, skins, currentSkin
+  };
+  localStorage.setItem("krotobitva_v3", JSON.stringify(data));
 }
 
-function updateDisplay() {
-  document.getElementById("coins").textContent = Math.floor(coins);
-  document.getElementById("diamonds").textContent = diamonds;
-  document.getElementById("clickPower").textContent = clickPower;
-  document.getElementById("autoCPS").textContent = Math.floor(autoCPS);
-  document.getElementById("clickPowerText").textContent = clickPower;
-  document.getElementById("seasonPoints").textContent = Math.floor(seasonPoints);
-  document.getElementById("seasonLevel").textContent = seasonLevel;
-  document.getElementById("daily-btn").disabled = dailyClaimed;
+// Регистрация
+function register() {
+  const name = document.getElementById("username").value.trim();
+  if (!name) return alert("Введите имя!");
+  user = name;
+  document.getElementById("registerScreen").classList.add("hidden");
+  document.getElementById("gameScreen").classList.remove("hidden");
+  loadGame();
+  updateDisplay();
+  setInterval(saveGame, 15000);
+}
 
-  for (let key in dailyQuests) {
-    const q = dailyQuests[key];
-    document.getElementById(`quest-${key}-current`).textContent = q.current;
-    document.getElementById(`quest-${key}-goal`).textContent = q.goal;
-    document.getElementById(`quest-${key}-btn`).disabled = q.current < q.goal || q.claimed;
+// Обновление баланса
+function updateDisplay() {
+  document.getElementById("coins").textContent = format(coins);
+  document.getElementById("diamonds").textContent = diamonds;
+  if (user) {
+    document.getElementById("profileName").textContent = user;
+    document.getElementById("profileCoins").textContent = format(coins);
+    document.getElementById("profileDiamonds").textContent = diamonds;
+  }
+  updateTimers();
+}
+
+// Формат чисел
+function format(num) {
+  return Math.floor(num).toLocaleString();
+}
+
+// Таймеры
+function updateTimers() {
+  const now = Date.now();
+  const day = 24 * 60 * 60 * 1000;
+
+  // Ежедневная награда
+  if (now - dailyRewardClaimedAt < day) {
+    document.getElementById("dailyBtn").disabled = true;
+    const left = Math.ceil((day - (now - dailyRewardClaimedAt)) / (60 * 60 * 1000));
+    document.getElementById("dailyTimer").textContent = `Доступно через: ${left} ч`;
+  } else {
+    document.getElementById("dailyBtn").disabled = false;
+    document.getElementById("dailyTimer").textContent = "";
   }
 
-  document.getElementById("clan-coins").textContent = formatNumber(clan.tasks.coins.current);
-  document.getElementById("clan-goal").textContent = formatNumber(clan.tasks.coins.goal);
-
-  const hoursLeft = 24 - Math.floor((Date.now() - dungeon.lastReset) / (1000 * 60 * 60));
-  document.getElementById("dungeon-timer").textContent = hoursLeft > 0 ? `${hoursLeft} ч` : "Готово!";
-
-  const chatEl = document.getElementById("chat-list");
-  chatEl.innerHTML = "";
-  [...chatMessages.slice(-5)].forEach(m => {
-    const item = document.createElement("div");
-    item.innerHTML = `<b>${m.user}</b>: ${m.msg}`;
-    chatEl.appendChild(item);
-  });
-
-  const leadEl = document.getElementById("leaderboard");
-  leadEl.innerHTML = "";
-  leaderboard.forEach(p => {
-    const item = document.createElement("div");
-    item.innerHTML = `${p.name}: <b>${formatNumber(p.coins)}</b>`;
-    leadEl.appendChild(item);
-  });
+  // Сундук
+  if (now - chestClaimedAt < day) {
+    document.getElementById("chestBtn").disabled = true;
+    const left = Math.ceil((day - (now - chestClaimedAt)) / (60 * 60 * 1000));
+    document.getElementById("chestTimer").textContent = `Доступно через: ${left} ч`;
+  } else {
+    document.getElementById("chestBtn").disabled = false;
+    document.getElementById("chestTimer").textContent = "";
+  }
 }
 
+// Меню
+function openTab(id) {
+  document.querySelectorAll(".menu").forEach(m => m.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
+
+function back() {
+  document.querySelectorAll(".menu").forEach(m => m.classList.add("hidden"));
+  document.getElementById("gameScreen").classList.remove("hidden");
+}
+
+// Клик
 document.getElementById("krot").addEventListener("click", () => {
   coins += clickPower;
-  seasonPoints += 0.1;
-  dailyQuests.clicks.current++;
-  dailyQuests.coins.current += clickPower;
-  vibrate(); playSound("click");
-  updateDisplay(); saveGame();
+  updateDisplay();
+  saveGame();
 
   const pop = document.createElement("div");
   pop.textContent = `+${clickPower}`;
-  pop.style.cssText = `position: absolute; color: #FFD700; font-weight: bold;
-    pointer-events: none; animation: pop-up 1s ease-out forwards;`;
+  pop.style.cssText = `
+    position: absolute; color: #0f0; font-weight: bold;
+    pointer-events: none; animation: pop-up 1s ease-out forwards;
+  `;
   pop.style.left = event.clientX - 20 + "px";
   pop.style.top = event.clientY - 20 + "px";
   document.body.appendChild(pop);
   setTimeout(() => document.body.removeChild(pop), 1000);
 });
 
+// Улучшения
+function renderUpgrades() {
+  const container = document.getElementById("upgradesList");
+  container.innerHTML = "";
+  upgrades.forEach(u => {
+    const div = document.createElement("div");
+    div.className = "upgrade-item";
+    div.innerHTML = `
+      <strong>${u.name}</strong> (${u.level})
+      <p>${u.desc}</p>
+      <button onclick="buyUpgrade(${upgrades.indexOf(u)})">${u.cost} 💰</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function buyUpgrade(index) {
+  const u = upgrades[index];
+  if (coins >= u.cost) {
+    coins -= u.cost;
+    u.level++;
+    u.cost = Math.floor(u.cost * 1.5);
+    if (u.type === "click") clickPower += u.level % 5 === 0 ? 5 : 1;
+    if (u.type === "auto") autoCPS += u.level % 5 === 0 ? 10 : 1;
+    updateDisplay();
+    renderUpgrades();
+    saveGame();
+    showToast(`Улучшено: ${u.name}`);
+  } else {
+    showToast("Недостаточно монет!");
+  }
+}
+
+// Награды
+function claimDaily() {
+  const now = Date.now();
+  if (now - dailyRewardClaimedAt < 24 * 60 * 60 * 1000) {
+    const left = Math.ceil((24 * 60 * 60 * 1000 - (now - dailyRewardClaimedAt)) / (60 * 60 * 1000));
+    showToast(`Награда доступна через ${left} ч`);
+    return;
+  }
+  coins += 100;
+  dailyRewardClaimedAt = now;
+  updateDisplay();
+  saveGame();
+  showToast("Получено 100 монет!");
+  updateTimers();
+}
+
 function openChest() {
-  dailyQuests.chests.current++;
+  const now = Date.now();
+  if (now - chestClaimedAt < 24 * 60 * 60 * 1000) {
+    const left = Math.ceil((24 * 60 * 60 * 1000 - (now - chestClaimedAt)) / (60 * 60 * 1000));
+    showToast(`Сундук доступен через ${left} ч`);
+    return;
+  }
+  chestClaimedAt = now;
   const rewards = [
-    { msg: "10 монет", value: 10 },
-    { msg: "50 монет", value: 50 },
-    { msg: "Алмаз!", effect: () => { diamonds++; playSound("chest"); } },
-    { msg: "Сила +1", effect: () => { clickPower++; } }
+    { msg: "50 монет", effect: () => coins += 50 },
+    { msg: "100 монет", effect: () => coins += 100 },
+    { msg: "Алмаз!", effect: () => diamonds++ },
+    { msg: "Сила +1", effect: () => { clickPower++; upgrades[0].level++; } },
+    { msg: "Разблокирован скин", effect: () => { skins[1].unlocked = true; renderSkins(); } }
   ];
   const r = rewards[Math.floor(Math.random() * rewards.length)];
-  coins += r.value || 0;
-  if (r.effect) r.effect();
-  alert("Сундук! Ты получил: " + r.msg);
-  updateDisplay(); saveGame();
-}
-
-function buyUpgrade(type, cost) {
-  if (coins >= cost) {
-    coins -= cost;
-    if (type === "click") clickPower++;
-    if (type === "auto") autoCPS++;
-    updateDisplay(); saveGame();
-  }
-}
-
-function claimDaily() {
-  if (dailyClaimed) return alert("Награда уже получена!");
-  coins += 100;
-  dailyClaimed = true;
-  updateDisplay(); saveGame();
-  alert("🎉 Вы получили 100 монет!");
-}
-
-function equipSkin(src) {
-  document.getElementById("krot").src = src;
-  document.querySelectorAll(".skin").forEach(img => img.classList.remove("active"));
-  event.target.classList.add("active");
+  r.effect();
+  updateDisplay();
   saveGame();
+  showToast("Сундук: " + r.msg);
+  updateTimers();
 }
 
-function claimSeasonReward() {
-  if (seasonPoints >= 100 && seasonLevel < 10) {
-    seasonLevel++;
-    diamonds += 5;
-    playSound("levelup");
-    alert(`🎉 Новый уровень сезона: ${seasonLevel}! +5 алмазов`);
-  }
-  updateDisplay(); saveGame();
+// Скины
+function renderSkins() {
+  const container = document.getElementById("skinList");
+  container.innerHTML = "";
+  skins.forEach((s, i) => {
+    if (s.unlocked) {
+      const img = document.createElement("img");
+      img.src = s.src;
+      img.onclick = () => equipSkin(i);
+      if (i === currentSkin) img.classList.add("active");
+      container.appendChild(img);
+    }
+  });
 }
 
-function claimQuest(type) {
-  const q = dailyQuests[type];
-  if (q.current >= q.goal && !q.claimed) {
-    q.claimed = true;
-    if (q.reward === "chest") openChest();
-    else if (q.reward > 1) diamonds += q.reward;
-    else coins += q.reward;
-    playSound("chest");
-    alert(`Цель выполнена! Награда: ${q.reward} ${q.reward === "chest" ? "сундук" : "алмазов/монет"}`);
-    updateDisplay(); saveGame();
-  }
-}
-
-function claimClanTask() {
-  if (clan.tasks.coins.current >= clan.tasks.coins.goal && !clan.tasks.coins.claimed) {
-    clan.tasks.coins.claimed = true;
-    coins += 50000;
-    diamonds += 3;
-    alert("Задание клана выполнено! +50к монет и 3 алмаза");
-    updateDisplay(); saveGame();
-  }
-}
-
-function enterDungeon() {
-  const now = Date.now();
-  if (now - dungeon.lastReset > 24 * 60 * 60 * 1000 || dungeon.lastReset === 0) {
-    dungeon.lastReset = now;
-    coins += 10000;
-    openChest();
-    alert("Вы прошли подземелье! +10к монет и сундук");
-    updateDisplay(); saveGame();
-  } else {
-    alert("Подземелье доступно раз в 24 часа");
-  }
-}
-
-function sendChat() {
-  const input = document.getElementById("chat-input");
-  const msg = input.value.trim();
-  if (msg) {
-    chatMessages.push({ user: "Вы", msg });
-    updateDisplay(); saveGame();
-    input.value = "";
-  }
-}
-
-function applyTheme() {
-  document.body.className = currentTheme;
-  document.getElementById("theme-btn").textContent = 
-    currentTheme === "dark" ? "💡" : currentTheme === "light" ? "🌙" : "🎮";
-}
-
-function switchTheme() {
-  currentTheme = currentTheme === "dark" ? "light" : currentTheme === "light" ? "cyber" : "dark";
-  applyTheme(); saveGame();
-}
-
-function playSound(name) {
-  sounds[name].currentTime = 0;
-  sounds[name].play().catch(() => {});
-}
-
-function formatNumber(num) {
-  return num.toLocaleString();
+function equipSkin(index) {
+  currentSkin = index;
+  document.getElementById("krot").src = skins[index].src;
+  renderSkins();
+  saveGame();
+  showToast(`Скин: ${skins[index].name}`);
 }
 
 // Админ
-window.addEventListener("keydown", e => {
-  if (e.key.length === 1) {
-    adminCode += e.key.toUpperCase();
-    if (adminCode.length > ADMIN_SECRET.length) adminCode = adminCode.slice(-ADMIN_SECRET.length);
-    if (adminCode === ADMIN_SECRET) showAdminPanel();
-  }
-});
-
-function showAdminPanel() {
-  document.getElementById("adminPanel").classList.add("admin-panel-visible");
-  document.getElementById("adminOverlay").classList.add("active");
-  document.body.style.overflow = "hidden";
-}
-
-function toggleAdminPanel() {
-  document.getElementById("adminPanel").classList.remove("admin-panel-visible");
-  document.getElementById("adminOverlay").classList.remove("active");
-  document.body.style.overflow = "";
-}
-
 function adminAddCoins(amount) {
   coins += amount;
-  updateDisplay(); saveGame();
+  updateDisplay();
+  saveGame();
   showToast(`+${amount} монет`);
 }
 
 function adminAddDiamonds(amount) {
   diamonds += amount;
-  updateDisplay(); saveGame();
+  updateDisplay();
+  saveGame();
   showToast(`+${amount} алмазов`);
 }
 
@@ -277,44 +252,40 @@ function adminOpenChest() {
   openChest();
 }
 
-function adminGiveSkin(index) {
-  const skins = ["assets/krot.png", "assets/krot_hat.png", "assets/krot_glasses.png"];
-  if (skins[index]) {
-    document.getElementById("krot").src = skins[index];
-    document.querySelectorAll(".skin")[index].click();
-    saveGame();
-    showToast(`Скин ${index + 1} активирован`);
-  }
-}
-
 function resetProgress() {
   if (confirm("Сбросить прогресс?")) {
-    localStorage.removeItem("krotobitva_v2");
+    localStorage.removeItem("krotobitva_v3");
     location.reload();
   }
 }
 
-function showToast(message) {
-  const toast = document.createElement("div");
-  toast.textContent = message;
-  toast.style.cssText = `
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-    background: #333; color: #FFD700; padding: 10px 20px; border-radius: 8px;
-    z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); opacity: 0;
-    transition: opacity 0.3s; font-size: 0.9em;
-  `;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.style.opacity = "1", 100);
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    setTimeout(() => document.body.removeChild(toast), 300);
-  }, 2000);
+// Уведомления
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.style.opacity = "1";
+  setTimeout(() => toast.style.opacity = "0", 2000);
 }
 
+// Авто-генерация
 setInterval(() => {
-  if (autoCPS > 0) coins += autoCPS / 10;
-  updateDisplay();
+  if (autoCPS > 0) {
+    coins += autoCPS / 10;
+    updateDisplay();
+  }
 }, 100);
 
-setInterval(saveGame, 15000);
-window.onload = loadGame;
+// Авто-обновление таймеров
+setInterval(updateTimers, 60000);
+
+// Загрузка
+window.onload = () => {
+  const saved = localStorage.getItem("krotobitva_v3");
+  if (saved) {
+    document.getElementById("registerScreen").classList.add("hidden");
+    document.getElementById("gameScreen").classList.remove("hidden");
+    loadGame();
+    updateDisplay();
+    setInterval(saveGame, 15000);
+  }
+};
