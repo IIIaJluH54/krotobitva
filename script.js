@@ -4,7 +4,8 @@ let clickPower = 1;
 let autoCPS = 0;
 let lastSave = Date.now();
 let dailyClaimed = false;
-
+let adminCode = ""; // для ввода кода
+const ADMIN_SECRET = "KROT"; // код для активации
 // Загрузка прогресса
 function loadGame() {
   const saved = localStorage.getItem("krotobitva");
