@@ -47,6 +47,7 @@ function updateDisplay() {
   document.getElementById("coins").textContent = Math.floor(coins);
   document.getElementById("clickPower").textContent = clickPower;
   document.getElementById("autoCPS").textContent = autoCPS;
+  document.getElementById("clickPowerText").textContent = clickPower; // новая строка
   document.getElementById("daily-btn").disabled = dailyClaimed;
 }
 
