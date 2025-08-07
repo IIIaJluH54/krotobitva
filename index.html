@@ -8,12 +8,12 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="cyber">
-  <!-- Главная страница (Telegram-регистрация) -->
+  <!-- Экран входа -->
   <div id="telegramScreen" class="screen">
     <div class="card">
       <h1>🐹 Крото Битва</h1>
-      <p>Добро пожаловать в игру!</p>
-      <button onclick="connectTelegram()">Войти через Telegram</button>
+      <p>Добро пожаловать в подземную битву!</p>
+      <button id="connectBtn" onclick="connectTelegram()">Войти через Telegram</button>
     </div>
   </div>
 
@@ -38,7 +38,7 @@
   <!-- Улучшения -->
   <div id="upgrades" class="screen hidden page">
     <header>
-      <button onclick="switchPage('game')" class="back">←</button>
+      <button class="back" onclick="switchPage('game')">←</button>
       <h2>Улучшения</h2>
     </header>
     <div id="upgradesList"></div>
@@ -47,7 +47,7 @@
   <!-- Награды -->
   <div id="rewards" class="screen hidden page">
     <header>
-      <button onclick="switchPage('game')" class="back">←</button>
+      <button class="back" onclick="switchPage('game')">←</button>
       <h2>Награды</h2>
     </header>
     <button id="dailyBtn" onclick="claimDaily()">Ежедневная награда</button>
@@ -59,19 +59,19 @@
   <!-- Профиль -->
   <div id="profile" class="screen hidden page">
     <header>
-      <button onclick="switchPage('game')" class="back">←</button>
+      <button class="back" onclick="switchPage('game')">←</button>
       <h2>Профиль</h2>
     </header>
-    <p>Игрок: <b id="profileName"></b></p>
-    <p>Монет: <b id="profileCoins"></b></p>
-    <p>Алмазов: <b id="profileDiamonds"></b></p>
+    <p>Игрок: <b id="profileName">—</b></p>
+    <p>Монет: <b id="profileCoins">0</b></p>
+    <p>Алмазов: <b id="profileDiamonds">0</b></p>
     <div class="skin-list" id="skinList"></div>
   </div>
 
   <!-- Админ-панель (скрыта) -->
   <div id="admin" class="screen hidden page">
     <header>
-      <button onclick="switchPage('game')" class="back">←</button>
+      <button class="back" onclick="switchPage('game')">←</button>
       <h2>🛠️ Админ-панель</h2>
     </header>
     <button onclick="adminAddCoins(1000)">+1000 монет</button>
