@@ -1,4 +1,4 @@
-// === Данные ===
+// === Глобальные переменные ===
 let user = "Player";
 let coins = 0;
 let diamonds = 0;
@@ -32,11 +32,11 @@ let currentSkin = 0;
 let adminCode = "";
 const ADMIN_SECRET = "KROT";
 
-// === Загрузка ===
+// === Загрузка игры ===
 function loadGame() {
-  const saved = localStorage.getItem("krotobitva_v4");
-  if (saved) {
-    try {
+  try {
+    const saved = localStorage.getItem("krotobitva_v4");
+    if (saved) {
       const data = JSON.parse(saved);
       user = data.user || "Player";
       coins = data.coins || 0;
@@ -50,12 +50,15 @@ function loadGame() {
       skins = data.skins || skins;
       currentSkin = data.currentSkin || 0;
 
+      // Восстановление монет за время отсутствия
       const secondsPassed = (Date.now() - lastSave) / 1000;
-      if (autoCPS > 0) coins += autoCPS * secondsPassed;
-      coins = Math.floor(coins);
-    } catch (e) {
-      console.error("Ошибка загрузки:", e);
+      if (autoCPS > 0 && secondsPassed > 0) {
+        coins += autoCPS * secondsPassed;
+        coins = Math.floor(coins);
+      }
     }
+  } catch (e) {
+    console.error("Ошибка загрузки прогресса:", e);
   }
 }
 
@@ -65,39 +68,51 @@ function saveGame() {
     user, coins, diamonds, clickPower, autoCPS, lastSave: Date.now(),
     dailyRewardClaimedAt, chestClaimedAt, upgrades, skins, currentSkin
   };
-  localStorage.setItem("krotobitva_v4", JSON.stringify(data));
+  try {
+    localStorage.setItem("krotobitva_v4", JSON.stringify(data));
+  } catch (e) {
+    console.error("Ошибка сохранения:", e);
+  }
 }
 
-// === Telegram-регистрация (имитация) ===
+// === Вход через Telegram ===
 function connectTelegram() {
-  // Имитация входа через Telegram
-  user = "Телеграм-Игрок";
-  document.getElementById("telegramScreen").classList.add("hidden");
-  document.getElementById("gameScreen").classList.remove("hidden");
-  loadGame();
-  updateDisplay();
-  setInterval(saveGame, 15000);
+  const btn = document.getElementById("connectBtn");
+  btn.disabled = true;
+  btn.textContent = "Загрузка...";
+
+  // Имитация входа
+  setTimeout(() => {
+    user = "Телеграм-Игрок";
+    document.getElementById("telegramScreen").classList.add("hidden");
+    document.getElementById("gameScreen").classList.remove("hidden");
+    loadGame();
+    updateDisplay();
+    setInterval(saveGame, 15000); // Автосохранение
+  }, 500);
 }
 
 // === Обновление интерфейса ===
 function updateDisplay() {
   document.getElementById("coins").textContent = format(coins);
   document.getElementById("diamonds").textContent = diamonds;
-  document.getElementById("profileName").textContent = user;
-  document.getElementById("profileCoins").textContent = format(coins);
-  document.getElementById("profileDiamonds").textContent = diamonds;
+  if (document.getElementById("profileName")) {
+    document.getElementById("profileName").textContent = user;
+    document.getElementById("profileCoins").textContent = format(coins);
+    document.getElementById("profileDiamonds").textContent = diamonds;
+  }
   updateTimers();
   renderUpgrades();
   renderSkins();
 
-  // Показать админ-панель, если активирована
-  if (window.adminVisible) {
-    document.querySelector('.bottom-nav').innerHTML += `
-      <button onclick="switchPage('admin')" style="display:none" id="admin-tab"></button>
-    `;
-    setTimeout(() => {
-      document.getElementById("admin-tab").style.display = "block";
-    }, 100);
+  // Показ админ-вкладки, если активирована
+  if (window.adminVisible && !document.querySelector('#admin-tab')) {
+    const nav = document.querySelector('.bottom-nav');
+    const adminBtn = document.createElement('button');
+    adminBtn.id = 'admin-tab';
+    adminBtn.innerHTML = '🛠️';
+    adminBtn.onclick = () => switchPage('admin');
+    nav.appendChild(adminBtn);
   }
 }
 
@@ -106,9 +121,11 @@ function format(num) {
   return Math.floor(num).toLocaleString();
 }
 
-// === Страницы ===
+// === Переключение страниц ===
 function switchPage(page) {
-  document.querySelectorAll(".screen:not(.hidden)").forEach(s => s.classList.add("hidden"));
+  document.querySelectorAll(".screen").forEach(screen => {
+    screen.classList.add("hidden");
+  });
   document.getElementById(page).classList.remove("hidden");
 }
 
@@ -117,46 +134,66 @@ function updateTimers() {
   const now = Date.now();
   const day = 24 * 60 * 60 * 1000;
 
+  // Ежедневная награда
   if (now - dailyRewardClaimedAt < day) {
-    document.getElementById("dailyBtn").disabled = true;
-    const h = Math.ceil((day - (now - dailyRewardClaimedAt)) / 3600000);
-    document.getElementById("dailyTimer").textContent = `Через: ${h} ч`;
+    const hours = Math.ceil((day - (now - dailyRewardClaimedAt)) / 3600000);
+    const btn = document.getElementById("dailyBtn");
+    if (btn) {
+      btn.disabled = true;
+      document.getElementById("dailyTimer").textContent = `Доступно через: ${hours} ч`;
+    }
   } else {
-    document.getElementById("dailyBtn").disabled = false;
-    document.getElementById("dailyTimer").textContent = "";
+    const btn = document.getElementById("dailyBtn");
+    if (btn) {
+      btn.disabled = false;
+      document.getElementById("dailyTimer").textContent = "";
+    }
   }
 
+  // Сундук
   if (now - chestClaimedAt < day) {
-    document.getElementById("chestBtn").disabled = true;
-    const h = Math.ceil((day - (now - chestClaimedAt)) / 3600000);
-    document.getElementById("chestTimer").textContent = `Через: ${h} ч`;
+    const hours = Math.ceil((day - (now - chestClaimedAt)) / 3600000);
+    const btn = document.getElementById("chestBtn");
+    if (btn) {
+      btn.disabled = true;
+      document.getElementById("chestTimer").textContent = `Доступно через: ${hours} ч`;
+    }
   } else {
-    document.getElementById("chestBtn").disabled = false;
-    document.getElementById("chestTimer").textContent = "";
+    const btn = document.getElementById("chestBtn");
+    if (btn) {
+      btn.disabled = false;
+      document.getElementById("chestTimer").textContent = "";
+    }
   }
 }
 
-// === Клик ===
-document.getElementById("krot").addEventListener("click", () => {
-  coins += clickPower;
-  updateDisplay();
-  saveGame();
+// === Клик по кроту ===
+document.addEventListener("click", (e) => {
+  if (e.target.id === "krot") {
+    coins += clickPower;
+    updateDisplay();
+    saveGame();
 
-  const pop = document.createElement("div");
-  pop.textContent = `+${clickPower}`;
-  pop.style.cssText = `
-    position: absolute; color: #0f0; font-weight: bold;
-    pointer-events: none; animation: pop-up 1s ease-out forwards;
-  `;
-  pop.style.left = event.clientX - 20 + "px";
-  pop.style.top = event.clientY - 20 + "px";
-  document.body.appendChild(pop);
-  setTimeout(() => document.body.removeChild(pop), 1000);
+    const pop = document.createElement("div");
+    pop.textContent = `+${clickPower}`;
+    pop.style.cssText = `
+      position: absolute;
+      color: #0f0;
+      font-weight: bold;
+      pointer-events: none;
+      animation: pop-up 1s ease-out forwards;
+    `;
+    pop.style.left = e.clientX - 20 + "px";
+    pop.style.top = e.clientY - 20 + "px";
+    document.body.appendChild(pop);
+    setTimeout(() => document.body.removeChild(pop), 1000);
+  }
 });
 
 // === Улучшения ===
 function renderUpgrades() {
   const container = document.getElementById("upgradesList");
+  if (!container) return;
   container.innerHTML = "";
   upgrades.forEach((u, i) => {
     const div = document.createElement("div");
@@ -170,8 +207,8 @@ function renderUpgrades() {
   });
 }
 
-function buyUpgrade(i) {
-  const u = upgrades[i];
+function buyUpgrade(index) {
+  const u = upgrades[index];
   if (coins >= u.cost) {
     coins -= u.cost;
     u.level++;
@@ -216,7 +253,7 @@ function openChest() {
     { msg: "50 монет", effect: () => coins += 50 },
     { msg: "100 монет", effect: () => coins += 100 },
     { msg: "Алмаз!", effect: () => diamonds++ },
-    { msg: "Сила +1", effect: () => { clickPower++; } },
+    { msg: "Сила +1", effect: () => clickPower += 1 },
     { msg: "Разблокирован скин", effect: () => skins[1].unlocked = true }
   ];
   const r = rewards[Math.floor(Math.random() * rewards.length)];
@@ -235,6 +272,7 @@ function adminForceChest() {
 // === Скины ===
 function renderSkins() {
   const container = document.getElementById("skinList");
+  if (!container) return;
   container.innerHTML = "";
   skins.forEach((s, i) => {
     if (s.unlocked) {
@@ -247,23 +285,26 @@ function renderSkins() {
   });
 }
 
-function equipSkin(i) {
-  currentSkin = i;
-  document.getElementById("krot").src = skins[i].src;
+function equipSkin(index) {
+  currentSkin = index;
+  document.getElementById("krot").src = skins[index].src;
   renderSkins();
   saveGame();
-  showToast(`Скин: ${skins[i].name}`);
+  showToast(`Скин: ${skins[index].name}`);
 }
 
-// === Админ-панель (скрыта) ===
-window.addEventListener("keydown", e => {
+// === Админ-панель ===
+document.addEventListener("keydown", (e) => {
   if (e.key.length === 1) {
     adminCode += e.key.toUpperCase();
-    if (adminCode.length > ADMIN_SECRET.length) adminCode = adminCode.slice(-ADMIN_SECRET.length);
+    if (adminCode.length > ADMIN_SECRET.length) {
+      adminCode = adminCode.slice(-ADMIN_SECRET.length);
+    }
     if (adminCode === ADMIN_SECRET) {
       window.adminVisible = true;
       switchPage("admin");
-      showToast("Админ-режим активирован");
+      showToast("🔓 Админ-режим активирован");
+      adminCode = "";
     }
   }
 });
@@ -283,7 +324,7 @@ function adminAddDiamonds(amount) {
 }
 
 function resetProgress() {
-  if (confirm("Сбросить прогресс?")) {
+  if (confirm("Сбросить весь прогресс?")) {
     localStorage.removeItem("krotobitva_v4");
     location.reload();
   }
@@ -294,25 +335,40 @@ function showToast(msg) {
   const toast = document.getElementById("toast");
   toast.textContent = msg;
   toast.style.opacity = "1";
-  setTimeout(() => toast.style.opacity = "0", 2000);
+  setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2000);
 }
 
 // === Авто-генерация ===
 setInterval(() => {
-  if (autoCPS > 0) coins += autoCPS / 10;
-  updateDisplay();
+  if (autoCPS > 0) {
+    coins += autoCPS / 10;
+    updateDisplay();
+  }
 }, 100);
 
 // === Обновление таймеров ===
 setInterval(updateTimers, 60000);
 
-// === Загрузка ===
-window.onload = () => {
+// === Загрузка при старте ===
+window.onload = function () {
   const saved = localStorage.getItem("krotobitva_v4");
   if (saved) {
-    document.getElementById("telegramScreen").classList.add("hidden");
-    document.getElementById("gameScreen").classList.remove("hidden");
-    loadGame();
-    updateDisplay();
+    try {
+      const data = JSON.parse(saved);
+      if (data.user) {
+        document.getElementById("telegramScreen").classList.add("hidden");
+        document.getElementById("gameScreen").classList.remove("hidden");
+        loadGame();
+        updateDisplay();
+        setInterval(saveGame, 15000);
+        return;
+      }
+    } catch (e) {
+      console.error("Ошибка парсинга:", e);
+    }
   }
+  // Если нет сохранённого прогресса — показываем экран входа
+  document.getElementById("telegramScreen").classList.remove("hidden");
 };
