@@ -4,142 +4,75 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Крото Битва</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div class="background"></div>
+<body class="cyber">
+  <!-- Регистрация -->
+  <div id="registerScreen" class="screen">
+    <div class="card">
+      <h1>🐹 Крото Битва</h1>
+      <input id="username" placeholder="Введите имя" />
+      <button onclick="register()">Войти в нору</button>
+    </div>
+  </div>
 
-  <div class="container">
-    <header class="header">
-      <h1><span class="neon">🐹 Крото Битва</span></h1>
-      <div class="coin-display">
-        💰 <span id="coins">0</span> | 💎 <span id="diamonds">0</span>
-      </div>
+  <!-- Основной экран -->
+  <div id="gameScreen" class="screen hidden">
+    <header>
+      <h1>Крото Битва</h1>
+      <div class="balance">💰 <span id="coins">0</span> 💎 <span id="diamonds">0</span></div>
     </header>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <span class="label">Сила клика</span>
-        <span class="value" id="clickPower">1</span>
-      </div>
-      <div class="stat-card">
-        <span class="label">Генерация</span>
-        <span class="value" id="autoCPS">0</span><span class="unit">/с</span>
-      </div>
-    </div>
-
-    <div class="krot-area">
+    <div class="tap-area">
       <img id="krot" src="assets/krot.png" alt="Крот" class="krot" />
     </div>
 
-    <div class="actions">
-      <button class="btn-main" onclick="openChest()">🎁 Открыть сундук</button>
-      <button class="btn-daily" id="daily-btn" onclick="claimDaily()">📅 Ежедневная награда</button>
-    </div>
-
-    <div class="shop">
-      <h2 class="section-title">🔧 Улучшения</h2>
-      <div class="upgrade-grid">
-        <div class="upgrade-card" onclick="buyUpgrade('click', 10)">
-          <div class="icon">👆</div>
-          <div class="info">
-            <strong>+1 к клику</strong>
-            <small>Сила: <span id="clickPowerText">1</span></small>
-          </div>
-          <div class="cost">10 💰</div>
-        </div>
-        <div class="upgrade-card" onclick="buyUpgrade('auto', 50)">
-          <div class="icon">⚙️</div>
-          <div class="info">
-            <strong>Автогенератор</strong>
-            <small>+1 монета/сек</small>
-          </div>
-          <div class="cost">50 💰</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="skins">
-      <h2 class="section-title">🎨 Скины крота</h2>
-      <div class="skin-list">
-        <img src="assets/krot.png" onclick="equipSkin('assets/krot.png')" class="skin active" title="Обычный" />
-        <img src="assets/krot_hat.png" onclick="equipSkin('assets/krot_hat.png')" class="skin" title="С кепкой" />
-        <img src="assets/krot_glasses.png" onclick="equipSkin('assets/krot_glasses.png')" class="skin" title="С очками" />
-      </div>
-    </div>
+    <nav class="bottom-nav">
+      <button onclick="openTab('upgrades')">🔧</button>
+      <button onclick="openTab('rewards')">🎁</button>
+      <button onclick="openTab('profile')">👤</button>
+      <button onclick="openTab('admin')" class="admin-btn">🛠️</button>
+    </nav>
   </div>
 
-  <!-- Сезон -->
-  <div class="section">
-    <h2>🏆 Сезон: Подземный бунт</h2>
-    <p>Очки: <span id="seasonPoints">0</span> | Уровень: <span id="seasonLevel">1</span></p>
-    <button onclick="claimSeasonReward()">Повысить уровень</button>
+  <!-- Меню -->
+  <div id="upgrades" class="menu hidden">
+    <h2>Улучшения</h2>
+    <div id="upgradesList"></div>
+    <button onclick="back()">← Назад</button>
   </div>
 
-  <!-- Цели -->
-  <div class="section">
-    <h2>🎯 Ежедневные цели</h2>
-    <div>Клики: <span id="quest-clicks-current">0</span>/<span id="quest-clicks-goal">100</span>
-      <button id="quest-clicks-btn" onclick="claimQuest('clicks')">Получить</button>
-    </div>
-    <div>Сундуки: <span id="quest-chests-current">0</span>/<span id="quest-chests-goal">3</span>
-      <button id="quest-chests-btn" onclick="claimQuest('chests')">Получить</button>
-    </div>
-    <div>Монеты: <span id="quest-coins-current">0</span>/<span id="quest-coins-goal">5000</span>
-      <button id="quest-coins-btn" onclick="claimQuest('coins')">Получить</button>
-    </div>
+  <div id="rewards" class="menu hidden">
+    <h2>Награды</h2>
+    <button id="dailyBtn" onclick="claimDaily()">Ежедневная награда</button>
+    <p id="dailyTimer"></p>
+    <button id="chestBtn" onclick="openChest()">Открыть сундук</button>
+    <p id="chestTimer"></p>
+    <button onclick="back()">← Назад</button>
   </div>
 
-  <!-- Клан -->
-  <div class="section">
-    <h2>🏰 Клан: Грызуны 88</h2>
-    <p>Участников: 12</p>
-    <p>Собрать: <span id="clan-coins">0</span>/<span id="clan-goal">10000000</span></p>
-    <button onclick="claimClanTask()">Получить награду</button>
+  <div id="profile" class="menu hidden">
+    <h2>Профиль</h2>
+    <p>Игрок: <b id="profileName"></b></p>
+    <p>Монет: <b id="profileCoins"></b></p>
+    <p>Алмазов: <b id="profileDiamonds"></b></p>
+    <div class="skin-list" id="skinList"></div>
+    <button onclick="back()">← Назад</button>
   </div>
 
-  <!-- Подземелье -->
-  <div class="section">
-    <h2>🕹️ Подземелье</h2>
-    <p>Доступно через: <span id="dungeon-timer">Готово!</span></p>
-    <button onclick="enterDungeon()">Войти</button>
+  <!-- Админ-панель -->
+  <div id="admin" class="menu hidden">
+    <h2>🛠️ Админ-панель</h2>
+    <button onclick="adminAddCoins(1000)">+1000 монет</button>
+    <button onclick="adminAddDiamonds(10)">+10 алмазов</button>
+    <button onclick="adminOpenChest()">Принудительно открыть сундук</button>
+    <button onclick="resetProgress()" class="danger">Сбросить прогресс</button>
+    <button onclick="back()">← Назад</button>
   </div>
 
-  <!-- Рейтинг -->
-  <div class="section">
-    <h2>🏅 Рейтинг</h2>
-    <div id="leaderboard"></div>
-  </div>
-
-  <!-- Чат -->
-  <div class="section">
-    <h2>💬 Чат клана</h2>
-    <div id="chat-list" style="height:100px; overflow-y:scroll; background:#1a1a1a; padding:10px; border-radius:8px;"></div>
-    <input id="chat-input" placeholder="Сообщение..." style="width:70%; padding:8px; border-radius:4px;" />
-    <button onclick="sendChat()" style="width:25%">Отправить</button>
-  </div>
-
-  <!-- Скрытая админ-панель -->
-  <div id="adminPanel" class="admin-panel-hidden">
-    <div class="admin-header">
-      <h3>🛠️ Админ-панель «Крото Битва»</h3>
-      <button onclick="toggleAdminPanel()" class="btn-close">×</button>
-    </div>
-    <div class="admin-grid">
-      <button onclick="adminAddCoins(1000)">+1 000 монет</button>
-      <button onclick="adminAddCoins(10000)">+10 000 монет</button>
-      <button onclick="adminAddDiamonds(5)">+5 алмазов</button>
-      <button onclick="adminOpenChest()">🎁 Открыть сундук</button>
-      <button onclick="adminGiveSkin(1)">Скин 1</button>
-      <button onclick="adminGiveSkin(2)">Скин 2</button>
-      <button onclick="resetProgress()" class="btn-danger">Сбросить прогресс</button>
-    </div>
-  </div>
-  <div id="adminOverlay" class="admin-overlay" onclick="toggleAdminPanel()"></div>
-
-  <!-- Тема -->
-  <button id="theme-btn" onclick="switchTheme()" style="position:fixed; bottom:20px; right:20px; font-size:1.5em; background:#FFD700; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer;">💡</button>
+  <!-- Уведомления -->
+  <div id="toast" class="toast"></div>
 
   <script src="script.js"></script>
 </body>
