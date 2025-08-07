@@ -14,7 +14,7 @@
     <header class="header">
       <h1><span class="neon">🐹 Крото Битва</span></h1>
       <div class="coin-display">
-        💰 <span id="coins">0</span>
+        💰 <span id="coins">0</span> | 💎 <span id="diamonds">0</span>
       </div>
     </header>
 
@@ -70,6 +70,56 @@
     </div>
   </div>
 
+  <!-- Сезон -->
+  <div class="section">
+    <h2>🏆 Сезон: Подземный бунт</h2>
+    <p>Очки: <span id="seasonPoints">0</span> | Уровень: <span id="seasonLevel">1</span></p>
+    <button onclick="claimSeasonReward()">Повысить уровень</button>
+  </div>
+
+  <!-- Цели -->
+  <div class="section">
+    <h2>🎯 Ежедневные цели</h2>
+    <div>Клики: <span id="quest-clicks-current">0</span>/<span id="quest-clicks-goal">100</span>
+      <button id="quest-clicks-btn" onclick="claimQuest('clicks')">Получить</button>
+    </div>
+    <div>Сундуки: <span id="quest-chests-current">0</span>/<span id="quest-chests-goal">3</span>
+      <button id="quest-chests-btn" onclick="claimQuest('chests')">Получить</button>
+    </div>
+    <div>Монеты: <span id="quest-coins-current">0</span>/<span id="quest-coins-goal">5000</span>
+      <button id="quest-coins-btn" onclick="claimQuest('coins')">Получить</button>
+    </div>
+  </div>
+
+  <!-- Клан -->
+  <div class="section">
+    <h2>🏰 Клан: Грызуны 88</h2>
+    <p>Участников: 12</p>
+    <p>Собрать: <span id="clan-coins">0</span>/<span id="clan-goal">10000000</span></p>
+    <button onclick="claimClanTask()">Получить награду</button>
+  </div>
+
+  <!-- Подземелье -->
+  <div class="section">
+    <h2>🕹️ Подземелье</h2>
+    <p>Доступно через: <span id="dungeon-timer">Готово!</span></p>
+    <button onclick="enterDungeon()">Войти</button>
+  </div>
+
+  <!-- Рейтинг -->
+  <div class="section">
+    <h2>🏅 Рейтинг</h2>
+    <div id="leaderboard"></div>
+  </div>
+
+  <!-- Чат -->
+  <div class="section">
+    <h2>💬 Чат клана</h2>
+    <div id="chat-list" style="height:100px; overflow-y:scroll; background:#1a1a1a; padding:10px; border-radius:8px;"></div>
+    <input id="chat-input" placeholder="Сообщение..." style="width:70%; padding:8px; border-radius:4px;" />
+    <button onclick="sendChat()" style="width:25%">Отправить</button>
+  </div>
+
   <!-- Скрытая админ-панель -->
   <div id="adminPanel" class="admin-panel-hidden">
     <div class="admin-header">
@@ -79,17 +129,17 @@
     <div class="admin-grid">
       <button onclick="adminAddCoins(1000)">+1 000 монет</button>
       <button onclick="adminAddCoins(10000)">+10 000 монет</button>
-      <button onclick="adminAddCoins(100000)">+100 000 монет</button>
+      <button onclick="adminAddDiamonds(5)">+5 алмазов</button>
       <button onclick="adminOpenChest()">🎁 Открыть сундук</button>
-      <button onclick="adminGiveSkin(1)">Получить скин 1</button>
-      <button onclick="adminGiveSkin(2)">Получить скин 2</button>
-      <button onclick="unlockAllSkins()" class="btn-warning">Разблокировать все скины</button>
+      <button onclick="adminGiveSkin(1)">Скин 1</button>
+      <button onclick="adminGiveSkin(2)">Скин 2</button>
       <button onclick="resetProgress()" class="btn-danger">Сбросить прогресс</button>
     </div>
   </div>
-
-  <!-- Подложка -->
   <div id="adminOverlay" class="admin-overlay" onclick="toggleAdminPanel()"></div>
+
+  <!-- Тема -->
+  <button id="theme-btn" onclick="switchTheme()" style="position:fixed; bottom:20px; right:20px; font-size:1.5em; background:#FFD700; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer;">💡</button>
 
   <script src="script.js"></script>
 </body>
