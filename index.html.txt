@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Крото Битва</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #ffcc00;
+            --primary-dark: #ff9900;
+            --secondary: #1a1a2e;
+            --background: #0f0c1a;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --border: rgba(255, 255, 255, 0.15);
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 204, 0, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 153, 0, 0.05) 0%, transparent 20%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 2px 10px rgba(255, 204, 0, 0.2);
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+            z-index: 1;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+        }
+
+        /* Balance Section */
+        .balance-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px var(--shadow);
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .balance-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .balance-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+        }
+
+        .balance-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .balance-amount {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            text-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+        }
+
+        .balance-change {
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .positive {
+            color: var(--success);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .negative {
+            color: var(--danger);
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 10px;
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 25px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-menu::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 204, 0, 0.05), rgba(255, 153, 0, 0.05));
+            z-index: 0;
+        }
+
+        .nav-item {
+            padding: 18px 25px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: 600;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: var(--secondary);
+            box-shadow: 0 8px 20px rgba(255, 204, 0, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        /* Main Content */
+        .game-area {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .main-panel {
+            flex: 3;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 204, 0, 0.03), rgba(255, 153, 0, 0.03));
+            z-index: 0;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeInScale 0.5s ease forwards;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Clicker */
+        .clicker-container {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .clicker-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 12px 30px rgba(255, 204, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--secondary);
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .clicker-button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 15px 35px rgba(255, 204, 0, 0.6);
+        }
+
+        .clicker-button:active {
+            transform: scale(0.95);
+        }
+
+        .clicker-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.15);
+            transform: rotate(30deg);
+            transition: all 0.5s ease;
+            z-index: 1;
+        }
+
+        .clicker-button:hover::after {
+            transform: rotate(30deg) translate(20%, 20%);
+        }
+
+        .clicker-text {
+            font-size: 1.4rem;
+            margin-top: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px 15px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+        }
+
+        /* Upgrades */
+        .upgrades-section {
+            margin-top: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .upgrades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .upgrade-card {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 18px;
+            padding: 25px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .upgrade-card:hover {
+            transform: translateY(-10px);
+            background: rgba(0, 0, 0, 0.35);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+        }
+
+        .upgrade-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .upgrade-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .upgrade-name {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .upgrade-description {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-bottom: 20px;
+            flex-grow: 1;
+            line-height: 1.5;
+        }
+
+        .upgrade-cost {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .upgrade-owned {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Achievements */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .achievement {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            padding: 20px 15px;
+            text-align: center;
+            opacity: 0.7;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement:hover {
+            transform: translateY(-8px);
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.35);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .achievement.unlocked {
+            opacity: 1;
+            background: rgba(255, 204, 0, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.2);
+        }
+
+        .achievement-icon {
+            font-size: 2.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .achievement:hover .achievement-icon {
+            transform: scale(1.2);
+        }
+
+        .achievement-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .achievement-desc {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            line-height: 1.4;
+        }
+
+        /* Daily Rewards */
+        .daily-rewards {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 18px;
+            padding: 25px;
+            margin: 25px 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--border);
+        }
+
+        .daily-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .reward-day {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid var(--border);
+        }
+
+        .reward-day:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 204, 0, 0.1);
+        }
+
+        .reward-day.received {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: var(--success);
+        }
+
+        .reward-day.current {
+            background: rgba(255, 204, 0, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+        }
+
+        .reward-day .reward-amount {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        /* Chests */
+        .chests-section {
+            margin: 30px 0;
+        }
+
+        .chests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 20px;
+        }
+
+        .chest-card {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            padding: 20px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(5px);
+        }
+
+        .chest-card:hover {
+            transform: translateY(-5px);
+            background: rgba(0, 0, 0, 0.35);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .chest-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .chest-name {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .chest-count {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Clan Section */
+        .clan-section {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 18px;
+            padding: 25px;
+            margin: 25px 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--border);
+        }
+
+        .clan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .clan-title {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .clan-info {
+            display: flex;
+            gap: 15px;
+        }
+
+        .clan-member {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Chat */
+        .chat-container {
+            margin-top: 20px;
+        }
+
+        .chat-messages {
+            height: 150px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .message.own {
+            background: rgba(255, 204, 0, 0.1);
+            margin-left: 30%;
+        }
+
+        .message .username {
+            font-weight: bold;
+            color: var(--primary);
+            margin-right: 8px;
+        }
+
+        .message .timestamp {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-left: 10px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .chat-input button {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary);
+            color: var(--secondary);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 18px;
+            padding: 25px;
+            margin: 25px 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--border);
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        .admin-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .admin-control {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .admin-control:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 204, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .admin-control i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .admin-control h4 {
+            margin-bottom: 5px;
+        }
+
+        .admin-control p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .admin-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .admin-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-input-group label {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .admin-input-group input, .admin-input-group select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .admin-btn {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary);
+            color: var(--secondary);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .admin-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .admin-btn.danger {
+            background: var(--danger);
+        }
+
+        .admin-btn.danger:hover {
+            background: #d32f2f;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.9);
+            color: var(--primary);
+            padding: 18px 25px;
+            border-radius: 16px;
+            transform: translateX(200%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border-left: 4px solid var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 25px;
+            margin-top: 30px;
+            opacity: 0.7;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.4s ease;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .float {
+            animation: float 2.5s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px rgba(255, 204, 0, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 204, 0, 0.7); }
+            100% { box-shadow: 0 0 10px rgba(255, 204, 0, 0.3); }
+        }
+
+        .glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .clicker-button {
+                width: 160px;
+                height: 160px;
+                font-size: 3rem;
+            }
+            
+            .upgrades-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-menu {
+                flex-wrap: wrap;
+            }
+            
+            .nav-item {
+                padding: 15px 20px;
+                font-size: 0.95rem;
+            }
+            
+            .balance-section {
+                padding: 20px 15px;
+            }
+            
+            .balance-amount {
+                font-size: 2.2rem;
+            }
+            
+            .rewards-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .admin-controls {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        /* Particle background effect */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--primary);
+            opacity: 0.1;
+            animation: floatParticle linear infinite;
+        }
+
+        @keyframes floatParticle {
+            to {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Крото Битва</h1>
+        </header>
+        
+        <div class="balance-section">
+            <div class="balance-title">
+                <i class="fas fa-wallet"></i> Ваш баланс
+            </div>
+            <div class="balance-amount" id="balance">0</div>
+            <div class="balance-change" id="balance-change">+0 монет</div>
+        </div>
+        
+        <div class="nav-menu">
+            <div class="nav-item active" data-tab="main">
+                <i class="fas fa-home"></i> Главное
+            </div>
+            <div class="nav-item" data-tab="upgrades">
+                <i class="fas fa-bolt"></i> Улучшения
+            </div>
+            <div class="nav-item" data-tab="daily">
+                <i class="fas fa-calendar-check"></i> Ежедневные награды
+            </div>
+            <div class="nav-item" data-tab="chests">
+                <i class="fas fa-gem"></i> Сундуки
+            </div>
+            <div class="nav-item" data-tab="clan">
+                <i class="fas fa-users"></i> Клан
+            </div>
+            <div class="nav-item" data-tab="leaderboard">
+                <i class="fas fa-trophy"></i> Рейтинг
+            </div>
+            <div class="nav-item" data-tab="skins">
+                <i class="fas fa-palette"></i> Скины
+            </div>
+            <div class="nav-item" data-tab="admin">
+                <i class="fas fa-user-shield"></i> Админ
+            </div>
+        </div>
+        
+        <div class="main-panel">
+            <!-- Главная вкладка -->
+            <div class="tab-content active" id="main-tab">
+                <div class="clicker-container">
+                    <button class="clicker-button float glow" id="clicker">
+                        <i class="fas fa-hamster"></i>
+                    </button>
+                    <div class="clicker-text">Кликни хомяка!</div>
+                </div>
+            </div>
+            
+            <!-- Улучшения -->
+            <div class="tab-content" id="upgrades-tab">
+                <div class="upgrades-section">
+                    <h2 class="section-title"><i class="fas fa-bolt"></i> Улучшения</h2>
+                    <div class="upgrades-grid" id="upgrades-container">
+                        <!-- Улучшения будут добавлены здесь через JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ежедневные награды -->
+            <div class="tab-content" id="daily-tab">
+                <div class="daily-rewards">
+                    <h3 class="daily-title"><i class="fas fa-calendar-check"></i> Ежедневные награды</h3>
+                    <div class="rewards-grid" id="rewards-container">
+                        <!-- Награды будут добавлены здесь через JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Сундуки -->
+            <div class="tab-content" id="chests-tab">
+                <div class="chests-section">
+                    <h3 class="section-title"><i class="fas fa-gem"></i> Сундуки</h3>
+                    <div class="chests-grid" id="chests-container">
+                        <!-- Сундуки будут добавлены здесь через JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Клан -->
+            <div class="tab-content" id="clan-tab">
+                <div class="clan-section">
+                    <div class="clan-header">
+                        <h3 class="clan-title"><i class="fas fa-users"></i> Клан: Золотая База</h3>
+                        <div class="clan-info">
+                            <div class="clan-member">12/50 участников</div>
+                            <div class="clan-member">Ранг: 3</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-container">
+                        <h4>Чат клана</h4>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message">
+                                <span class="username">Admin:</span> Добро пожаловать в клан!
+                                <span class="timestamp">12:45</span>
+                            </div>
+                            <div class="message own">
+                                <span class="username">Вы:</span> Привет всем!
+                                <span class="timestamp">12:46</span>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" placeholder="Введите сообщение...">
+                            <button><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Рейтинг -->
+            <div class="tab-content" id="leaderboard-tab">
+                <div class="upgrades-section">
+                    <h2 class="section-title"><i class="fas fa-trophy"></i> Рейтинг игроков</h2>
+                    <div class="stats-grid" id="leaderboard-container">
+                        <!-- Рейтинг будет добавлен здесь через JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Скины -->
+            <div class="tab-content" id="skins-tab">
+                <div class="upgrades-section">
+                    <h2 class="section-title"><i class="fas fa-palette"></i> Скины кротов</h2>
+                    <div class="upgrades-grid" id="skins-container">
+                        <!-- Скины будут добавлены здесь через JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Админ панель -->
+            <div class="tab-content" id="admin-tab">
+                <div class="admin-panel" id="admin-panel">
+                    <h2 class="admin-title"><i class="fas fa-user-shield"></i> Админ Панель</h2>
+                    
+                    <div class="admin-controls">
+                        <div class="admin-control" onclick="toggleAdminPanel()">
+                            <i class="fas fa-times-circle"></i>
+                            <h4>Скрыть панель</h4>
+                            <p>Закрыть админ панель</p>
+                        </div>
+                        <div class="admin-control" onclick="addCoins(10000)">
+                            <i class="fas fa-coins"></i>
+                            <h4>Добавить монеты</h4>
+                            <p>+10,000 монет</p>
+                        </div>
+                        <div class="admin-control" onclick="addChests()">
+                            <i class="fas fa-gem"></i>
+                            <h4>Сундуки</h4>
+                            <p>Добавить сундуки</p>
+                        </div>
+                        <div class="admin-control" onclick="resetDaily()">
+                            <i class="fas fa-redo"></i>
+                            <h4>Сброс наград</h4>
+                            <p>Сбросить ежедневные награды</p>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-inputs">
+                        <div class="admin-input-group">
+                            <label for="user-id">ID Игрока</label>
+                            <input type="text" id="user-id" placeholder="Введите ID игрока">
+                        </div>
+                        <div class="admin-input-group">
+                            <label for="coin-amount">Количество монет</label>
+                            <input type="number" id="coin-amount" placeholder="Количество монет" value="1000">
+                        </div>
+                        <div class="admin-input-group">
+                            <label for="chest-type">Тип сундука</label>
+                            <select id="chest-type">
+                                <option value="common">Обычный</option>
+                                <option value="rare">Редкий</option>
+                                <option value="epic">Эпический</option>
+                                <option value="legendary">Легендарный</option>
+                            </select>
+                        </div>
+                        <div class="admin-input-group">
+                            <label for="days">Дни</label>
+                            <input type="number" id="days" placeholder="Дни" value="1">
+                        </div>
+                    </div>
+                    
+                    <div class="admin-actions">
+                        <button class="admin-btn" onclick="giveCoins()">Выдать монеты</button>
+                        <button class="admin-btn" onclick="giveChest()">Выдать сундук</button>
+                        <button class="admin-btn danger" onclick="banPlayer()">Заблокировать игрока</button>
+                        <button class="admin-btn danger" onclick="resetPlayer()">Сбросить игрока</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+        </footer>
+    </div>
+    
+    <div class="notification" id="notification">Улучшение куплено!</div>
+
+    <script>
+        // Создание частиц для фона
+        function createParticles() {
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.width = Math.random() * 20 + 5 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDuration = Math.random() * 10 + 10 + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Основные переменные игры
+        let coins = 0;
+        let clickPower = 1;
+        let perSecond = 0;
+        let totalClicks = 0;
+        let totalCoinsEarned = 0;
+        let totalUpgradesBought = 0;
+        let lastBalanceUpdate = 0;
+        let balanceChange = 0;
+        let dailyStreak = 0;
+        let lastDailyReward = null;
+        let chests = {
+            common: 5,
+            rare: 2,
+            epic: 1,
+            legendary: 0
+        };
+        let playerSkin = 'default';
+        let clan = {
+            name: 'Золотая База',
+            members: 12,
+            rank: 3,
+            level: 5
+        };
+        let isAdmin = false;
+        let adminPassword = 'admin123';
+
+        // Улучшения
+        const upgrades = [
+            {
+                id: 1,
+                name: "Лучший клюв",
+                description: "Увеличивает силу клика на 1",
+                baseCost: 10,
+                cost: 10,
+                power: 1,
+                owned: 0,
+                type: "click"
+            },
+            {
+                id: 2,
+                name: "Большая лапка",
+                description: "Увеличивает силу клика на 2",
+                baseCost: 50,
+                cost: 50,
+                power: 2,
+                owned: 0,
+                type: "click"
+            },
+            {
+                id: 3,
+                name: "Секретный рецепт",
+                description: "Увеличивает силу клика на 5",
+                baseCost: 200,
+                cost: 200,
+                power: 5,
+                owned: 0,
+                type: "click"
+            },
+            {
+                id: 4,
+                name: "Крото-машина",
+                description: "Генерирует 1 монету в секунду",
+                baseCost: 15,
+                cost: 15,
+                power: 1,
+                owned: 0,
+                type: "auto"
+            },
+            {
+                id: 5,
+                name: "Механический крот",
+                description: "Генерирует 5 монет в секунду",
+                baseCost: 100,
+                cost: 100,
+                power: 5,
+                owned: 0,
+                type: "auto"
+            },
+            {
+                id: 6,
+                name: "Крото-фабрика",
+                description: "Генерирует 20 монет в секунду",
+                baseCost: 500,
+                cost: 500,
+                power: 20,
+                owned: 0,
+                type: "auto"
+            }
+        ];
+
+        // Ежедневные награды
+        const dailyRewards = [
+            { day: 1, amount: 100, claimed: false },
+            { day: 2, amount: 200, claimed: false },
+            { day: 3, amount: 500, claimed: false },
+            { day: 4, amount: 1000, claimed: false },
+            { day: 5, amount: 2000, claimed: false },
+            { day: 6, amount: 5000, claimed: false },
+            { day: 7, amount: 10000, claimed: false }
+        ];
+
+        // Скины
+        const skins = [
+            { id: 'default', name: 'Стандартный', price: 0, owned: true },
+            { id: 'golden', name: 'Золотой', price: 5000, owned: false },
+            { id: 'diamond', name: 'Алмазный', price: 10000, owned: false },
+            { id: 'rainbow', name: 'Радужный', price: 25000, owned: false },
+            { id: 'space', name: 'Космический', price: 50000, owned: false },
+            { id: 'fire', name: 'Огненный', price: 100000, owned: false }
+        ];
+
+        // Рейтинг игроков
+        const leaderboard = [
+            { name: 'Крото-Мастер', coins: 150000, rank: 1 },
+            { name: 'Хомяк-Боец', coins: 120000, rank: 2 },
+            { name: 'Крот-Герой', coins: 95000, rank: 3 },
+            { name: 'Мега-Крот', coins: 80000, rank: 4 },
+            { name: 'Супер-Хомяк', coins: 65000, rank: 5 },
+            { name: 'Крото-Победитель', coins: 50000, rank: 6 },
+            { name: 'Крото-Король', coins: 40000, rank: 7 },
+            { name: 'Крото-Рыцарь', coins: 30000, rank: 8 },
+            { name: 'Крото-Маг', coins: 20000, rank: 9 },
+            { name: 'Крото-Воин', coins: 15000, rank: 10 }
+        ];
+
+        // DOM элементы
+        const clickerButton = document.getElementById('clicker');
+        const balanceDisplay = document.getElementById('balance');
+        const balanceChangeDisplay = document.getElementById('balance-change');
+        const coinsDisplay = document.getElementById('coins');
+        const clickPowerDisplay = document.getElementById('click-power');
+        const perSecondDisplay = document.getElementById('per-second');
+        const totalClicksDisplay = document.getElementById('total-clicks');
+        const totalCoinsDisplay = document.getElementById('total-coins');
+        const totalUpgradesDisplay = document.getElementById('total-upgrades');
+        const upgradesContainer = document.getElementById('upgrades-container');
+        const rewardsContainer = document.getElementById('rewards-container');
+        const chestsContainer = document.getElementById('chests-container');
+        const leaderboardContainer = document.getElementById('leaderboard-container');
+        const skinsContainer = document.getElementById('skins-container');
+        const notification = document.getElementById('notification');
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const adminPanel = document.getElementById('admin-panel');
+
+        // Инициализация игры
+        function initGame() {
+            createParticles();
+            renderUpgrades();
+            renderDailyRewards();
+            renderChests();
+            renderLeaderboard();
+            renderSkins();
+            updateStats();
+            updateBalance();
+            
+            // Обработчик клика по кнопке
+            clickerButton.addEventListener('click', handleClick);
+            
+            // Обработчики навигации
+            navItems.forEach(item => {
+                item.addEventListener('click', () => switchTab(item.dataset.tab));
+            });
+            
+            // Автоматическое обновление каждую секунду
+            setInterval(updateGame, 1000);
+            
+            // Обновление рейтинга каждые 30 секунд
+            setInterval(updateLeaderboard, 30000);
+            
+            // Проверка секретного кода для админки
+            checkAdminAccess();
+        }
+
+        // Проверка доступа к админке
+        function checkAdminAccess() {
+            // Секретный код для входа в админку
+            const secretCode = prompt("Введите секретный код для доступа к админке:");
+            if (secretCode === adminPassword) {
+                isAdmin = true;
+                showAdminPanel();
+                showNotification("Доступ к админке разрешен!");
+            }
+        }
+
+        // Показать админ панель
+        function showAdminPanel() {
+            const adminTab = document.querySelector('[data-tab="admin"]');
+            if (adminTab) {
+                adminTab.style.display = 'flex';
+            }
+            adminPanel.classList.add('active');
+        }
+
+        // Скрыть админ панель
+        function hideAdminPanel() {
+            adminPanel.classList.remove('active');
+        }
+
+        // Переключение табов
+        function switchTab(tabName) {
+            // Скрыть все содержимые табов
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Убрать активный класс у всех навигационных элементов
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Показать выбранный таб
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Проверяем, если выбрана админ панель
+            if (tabName === 'admin') {
+                if (isAdmin) {
+                    showAdminPanel();
+                } else {
+                    // Проверяем доступ к админке
+                    const secretCode = prompt("Введите секретный код для доступа к админке:");
+                    if (secretCode === adminPassword) {
+                        isAdmin = true;
+                        showAdminPanel();
+                        showNotification("Доступ к админке разрешен!");
+                    } else {
+                        showNotification("Неверный код доступа!");
+                        // Вернуться к главной вкладке
+                        document.getElementById('main-tab').classList.add('active');
+                        document.querySelector('[data-tab="main"]').classList.add('active');
+                    }
+                }
+            } else {
+                hideAdminPanel();
+            }
+        }
+
+        // Обработка клика
+        function handleClick() {
+            coins += clickPower;
+            totalClicks++;
+            totalCoinsEarned += clickPower;
+            
+            // Анимация эффекта клика
+            clickerButton.classList.add('pulse');
+            setTimeout(() => {
+                clickerButton.classList.remove('pulse');
+            }, 400);
+            
+            updateStats();
+            updateBalance();
+        }
+
+        // Обновление игры каждую секунду
+        function updateGame() {
+            coins += perSecond;
+            totalCoinsEarned += perSecond;
+            updateStats();
+            updateBalance();
+        }
+
+        // Обновление рейтинга каждые 30 секунд
+        function updateLeaderboard() {
+            // Имитация обновления рейтинга
+            renderLeaderboard();
+        }
+
+        // Покупка улучшения
+        function buyUpgrade(upgradeId) {
+            const upgrade = upgrades.find(u => u.id === upgradeId);
+            
+            if (coins >= upgrade.cost) {
+                coins -= upgrade.cost;
+                upgrade.owned++;
+                upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.5, upgrade.owned));
+                totalUpgradesBought++;
+                
+                if (upgrade.type === "click") {
+                    clickPower += upgrade.power;
+                } else {
+                    perSecond += upgrade.power;
+                }
+                
+                updateStats();
+                updateBalance();
+                renderUpgrades();
+                showNotification(`Куплено: ${upgrade.name}`);
+            }
+        }
+
+        // Отображение уведомления
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Обновление отображения статистики
+        function updateStats() {
+            coinsDisplay.textContent = formatNumber(coins);
+            clickPowerDisplay.textContent = clickPower;
+            perSecondDisplay.textContent = perSecond;
+            totalClicksDisplay.textContent = totalClicks;
+            totalCoinsDisplay.textContent = formatNumber(totalCoinsEarned);
+            totalUpgradesDisplay.textContent = totalUpgradesBought;
+        }
+
+        // Обновление отображения баланса
+        function updateBalance() {
+            const now = Date.now();
+            const timeDiff = (now - lastBalanceUpdate) / 1000; // секунды
+            
+            if (timeDiff > 0.5) { // Обновляем не чаще чем раз в 0.5 секунды
+                balanceChange = coins - lastBalanceUpdate;
+                lastBalanceUpdate = coins;
+                
+                balanceDisplay.textContent = formatNumber(coins);
+                
+                // Обновляем изменение баланса
+                if (balanceChange > 0) {
+                    balanceChangeDisplay.textContent = `+${formatNumber(balanceChange)} монет`;
+                    balanceChangeDisplay.className = "balance-change positive";
+                } else if (balanceChange < 0) {
+                    balanceChangeDisplay.textContent = `${formatNumber(balanceChange)} монет`;
+                    balanceChangeDisplay.className = "balance-change negative";
+                } else {
+                    balanceChangeDisplay.textContent = "0 монет";
+                    balanceChangeDisplay.className = "balance-change";
+                }
+            }
+        }
+
+        // Форматирование чисел
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return Math.floor(num);
+        }
+
+        // Рендеринг улучшений
+        function renderUpgrades() {
+            upgradesContainer.innerHTML = '';
+            
+            upgrades.forEach(upgrade => {
+                const upgradeElement = document.createElement('div');
+                upgradeElement.className = 'upgrade-card';
+                upgradeElement.innerHTML = `
+                    <div class="upgrade-name">
+                        <i class="fas fa-${upgrade.type === 'click' ? 'hand-pointer' : 'cogs'}"></i>
+                        ${upgrade.name}
+                    </div>
+                    <div class="upgrade-description">${upgrade.description}</div>
+                    <div class="upgrade-cost">
+                        <i class="fas fa-coins"></i> ${formatNumber(upgrade.cost)}
+                    </div>
+                    <div class="upgrade-owned">
+                        <i class="fas fa-shopping-cart"></i> Куплено: ${upgrade.owned}
+                    </div>
+                `;
+                
+                if (coins >= upgrade.cost) {
+                    upgradeElement.style.cursor = 'pointer';
+                    upgradeElement.addEventListener('click', () => buyUpgrade(upgrade.id));
+                } else {
+                    upgradeElement.style.opacity = '0.7';
+                    upgradeElement.style.cursor = 'default';
+                }
+                
+                upgradesContainer.appendChild(upgradeElement);
+            });
+        }
+
+        // Рендеринг ежедневных наград
+        function renderDailyRewards() {
+            rewardsContainer.innerHTML = '';
+            
+            dailyRewards.forEach((reward, index) => {
+                const rewardElement = document.createElement('div');
+                rewardElement.className = `reward-day ${reward.claimed ? 'received' : ''} ${index === dailyStreak ? 'current' : ''}`;
+                rewardElement.innerHTML = `
+                    <div>День ${reward.day}</div>
+                    <div class="reward-amount">${formatNumber(reward.amount)}</div>
+                `;
+                
+                if (!reward.claimed) {
+                    rewardElement.addEventListener('click', () => claimDailyReward(index));
+                }
+                
+                rewardsContainer.appendChild(rewardElement);
+            });
+        }
+
+        // Получение ежедневной награды
+        function claimDailyReward(dayIndex) {
+            const reward = dailyRewards[dayIndex];
+            if (!reward.claimed) {
+                coins += reward.amount;
+                reward.claimed = true;
+                dailyStreak = dayIndex + 1;
+                updateStats();
+                updateBalance();
+                renderDailyRewards();
+                showNotification(`Получено ${formatNumber(reward.amount)} монет!`);
+            }
+        }
+
+        // Рендеринг сундуков
+        function renderChests() {
+            chestsContainer.innerHTML = '';
+            
+            const chestTypes = [
+                { type: 'common', name: 'Обычный', icon: 'fas fa-cube', color: '#aaa', count: chests.common },
+                { type: 'rare', name: 'Редкий', icon: 'fas fa-gem', color: '#4caf50', count: chests.rare },
+                { type: 'epic', name: 'Эпический', icon: 'fas fa-star', color: '#2196f3', count: chests.epic },
+                { type: 'legendary', name: 'Легендарный', icon: 'fas fa-fire', color: '#ff9800', count: chests.legendary }
+            ];
+            
+            chestTypes.forEach(chest => {
+                const chestElement = document.createElement('div');
+                chestElement.className = 'chest-card';
+                chestElement.innerHTML = `
+                    <div class="chest-icon" style="color: ${chest.color}">
+                        <i class="${chest.icon}"></i>
+                    </div>
+                    <div class="chest-name">${chest.name}</div>
+                    <div class="chest-count">${chest.count} шт.</div>
+                `;
+                
+                chestElement.addEventListener('click', () => openChest(chest.type));
+                
+                chestsContainer.appendChild(chestElement);
+            });
+        }
+
+        // Открытие сундука
+        function openChest(chestType) {
+            if (chests[chestType] > 0) {
+                chests[chestType]--;
+                const rewardAmount = Math.floor(Math.random() * 1000) + 100;
+                coins += rewardAmount;
+                updateStats();
+                updateBalance();
+                renderChests();
+                showNotification(`Открыт ${chestType} сундук! Получено ${formatNumber(rewardAmount)} монет.`);
+            }
+        }
+
+        // Рендеринг рейтинга
+        function renderLeaderboard() {
+            leaderboardContainer.innerHTML = '';
+            
+            leaderboard.forEach(player => {
+                const statCard = document.createElement('div');
+                statCard.className = 'stat-card';
+                statCard.innerHTML = `
+                    <div class="stat-value">${player.rank}</div>
+                    <div class="stat-label">${player.name}</div>
+                    <div class="stat-value">${formatNumber(player.coins)}</div>
+                    <div class="stat-label">монет</div>
+                `;
+                leaderboardContainer.appendChild(statCard);
+            });
+        }
+
+        // Рендеринг скинов
+        function renderSkins() {
+            skinsContainer.innerHTML = '';
+            
+            skins.forEach(skin => {
+                const skinElement = document.createElement('div');
+                skinElement.className = 'upgrade-card';
+                skinElement.innerHTML = `
+                    <div class="upgrade-name">
+                        <i class="fas fa-paw"></i>
+                        ${skin.name}
+                    </div>
+                    <div class="upgrade-description">Скин крота</div>
+                    <div class="upgrade-cost">
+                        ${skin.price > 0 ? `<i class="fas fa-coins"></i> ${formatNumber(skin.price)}` : 'Бесплатно'}
+                    </div>
+                    <div class="upgrade-owned">
+                        ${skin.owned ? '<i class="fas fa-check-circle"></i> Куплен' : 
+                          `<i class="fas fa-shopping-cart"></i> Купить`}
+                    </div>
+                `;
+                
+                if (!skin.owned && skin.price > 0) {
+                    skinElement.style.cursor = 'pointer';
+                    skinElement.addEventListener('click', () => buySkin(skin.id));
+                } else if (skin.owned) {
+                    skinElement.style.border = '2px solid var(--primary)';
+                }
+                
+                skinsContainer.appendChild(skinElement);
+            });
+        }
+
+        // Покупка скина
+        function buySkin(skinId) {
+            const skin = skins.find(s => s.id === skinId);
+            if (skin && !skin.owned && coins >= skin.price) {
+                coins -= skin.price;
+                skin.owned = true;
+                playerSkin = skinId;
+                updateStats();
+                updateBalance();
+                renderSkins();
+                showNotification(`Скин "${skin.name}" куплен!`);
+            }
+        }
+
+        // Админ функции
+        function toggleAdminPanel() {
+            const panel = document.getElementById('admin-panel');
+            panel.classList.toggle('active');
+        }
+
+        function addCoins(amount) {
+            coins += amount;
+            updateStats();
+            updateBalance();
+            showNotification(`Добавлено ${formatNumber(amount)} монет!`);
+        }
+
+        function addChests() {
+            chests.common += 5;
+            chests.rare += 2;
+            chests.epic += 1;
+            chests.legendary += 1;
+            renderChests();
+            showNotification('Добавлены сундуки!');
+        }
+
+        function resetDaily() {
+            dailyRewards.forEach(reward => {
+                reward.claimed = false;
+            });
+            dailyStreak = 0;
+            renderDailyRewards();
+            showNotification('Ежедневные награды сброшены!');
+        }
+
+        function giveCoins() {
+            const userId = document.getElementById('user-id').value;
+            const coinAmount = parseInt(document.getElementById('coin-amount').value);
+            
+            if (userId && coinAmount > 0) {
+                coins += coinAmount;
+                updateStats();
+                updateBalance();
+                showNotification(`Игроку ${userId} выдано ${formatNumber(coinAmount)} монет!`);
+            } else {
+                showNotification('Введите корректные данные!');
+            }
+        }
+
+        function giveChest() {
+            const chestType = document.getElementById('chest-type').value;
+            const days = parseInt(document.getElementById('days').value) || 1;
+            
+            if (chestType) {
+                chests[chestType] += days;
+                renderChests();
+                showNotification(`Выдан ${chestType} сундук!`);
+            } else {
+                showNotification('Выберите тип сундука!');
+            }
+        }
+
+        function banPlayer() {
+            const userId = document.getElementById('user-id').value;
+            if (userId) {
+                showNotification(`Игрок ${userId} заблокирован!`);
+            } else {
+                showNotification('Введите ID игрока!');
+            }
+        }
+
+        function resetPlayer() {
+            const userId = document.getElementById('user-id').value;
+            if (userId) {
+                showNotification(`Данные игрока ${userId} сброшены!`);
+            } else {
+                showNotification('Введите ID игрока!');
+            }
+        }
+
+        // Запуск игры
+        window.onload = initGame;
+    </script>
+</body>
+</html>
