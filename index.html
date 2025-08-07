@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="cyber">
-  <!-- Регистрация -->
+  <!-- Экран регистрации -->
   <div id="registerScreen" class="screen">
     <div class="card">
       <h1>🐹 Крото Битва</h1>
@@ -17,7 +17,7 @@
     </div>
   </div>
 
-  <!-- Основной экран -->
+  <!-- Игровой экран -->
   <div id="gameScreen" class="screen hidden">
     <header>
       <h1>Крото Битва</h1>
@@ -36,13 +36,14 @@
     </nav>
   </div>
 
-  <!-- Меню -->
+  <!-- Меню: Улучшения -->
   <div id="upgrades" class="menu hidden">
     <h2>Улучшения</h2>
     <div id="upgradesList"></div>
     <button onclick="back()">← Назад</button>
   </div>
 
+  <!-- Меню: Награды -->
   <div id="rewards" class="menu hidden">
     <h2>Награды</h2>
     <button id="dailyBtn" onclick="claimDaily()">Ежедневная награда</button>
@@ -52,6 +53,7 @@
     <button onclick="back()">← Назад</button>
   </div>
 
+  <!-- Меню: Профиль -->
   <div id="profile" class="menu hidden">
     <h2>Профиль</h2>
     <p>Игрок: <b id="profileName"></b></p>
@@ -61,12 +63,12 @@
     <button onclick="back()">← Назад</button>
   </div>
 
-  <!-- Админ-панель -->
+  <!-- Меню: Админ-панель -->
   <div id="admin" class="menu hidden">
     <h2>🛠️ Админ-панель</h2>
     <button onclick="adminAddCoins(1000)">+1000 монет</button>
     <button onclick="adminAddDiamonds(10)">+10 алмазов</button>
-    <button onclick="adminOpenChest()">Принудительно открыть сундук</button>
+    <button onclick="adminForceChest()">Принудительно открыть сундук</button>
     <button onclick="resetProgress()" class="danger">Сбросить прогресс</button>
     <button onclick="back()">← Назад</button>
   </div>
