@@ -68,40 +68,29 @@
         <img src="assets/krot_glasses.png" onclick="equipSkin('assets/krot_glasses.png')" class="skin" title="С очками" />
       </div>
     </div>
-<!-- Скрытая админ-панель -->
-<div id="adminPanel" class="admin-panel-hidden">
-  <div class="admin-header">
-    <h3>🛠️ Админ-панель «Крото Битва»</h3>
-    <button onclick="toggleAdminPanel()" class="btn-close">×</button>
   </div>
 
-  <div class="admin-grid">
-    <button onclick="adminAddCoins(1000)">+1 000 монет</button>
-    <button onclick="adminAddCoins(10000)">+10 000 монет</button>
-    <button onclick="adminAddCoins(100000)">+100 000 монет</button>
-
-    <button onclick="adminOpenChest()">🎁 Открыть сундук</button>
-    <button onclick="adminGiveSkin(1)">Получить скин 1</button>
-    <button onclick="adminGiveSkin(2)">Получить скин 2</button>
-
-    <button onclick="resetProgress()" class="btn-danger">Сбросить прогресс</button>
-    <button onclick="unlockAllSkins()">Разблокировать все скины</button>
-  </div>
-</div>
-
-<!-- Полупрозрачная подложка (появляется при открытии) -->
-<div id="adminOverlay" class="admin-overlay" onclick="toggleAdminPanel()"></div>
-    <!-- Админка (скрыта по умолчанию, можно убрать в релизе) -->
-    <div class="admin-panel">
-      <details>
-        <summary style="color:#aaa; cursor:pointer;">🛠️ Админ-панель</summary>
-        <button onclick="adminAddCoins(1000)">+1000 монет</button>
-        <button onclick="adminOpenChest()">Открыть сундук</button>
-      </details>
+  <!-- Скрытая админ-панель -->
+  <div id="adminPanel" class="admin-panel-hidden">
+    <div class="admin-header">
+      <h3>🛠️ Админ-панель «Крото Битва»</h3>
+      <button onclick="toggleAdminPanel()" class="btn-close">×</button>
+    </div>
+    <div class="admin-grid">
+      <button onclick="adminAddCoins(1000)">+1 000 монет</button>
+      <button onclick="adminAddCoins(10000)">+10 000 монет</button>
+      <button onclick="adminAddCoins(100000)">+100 000 монет</button>
+      <button onclick="adminOpenChest()">🎁 Открыть сундук</button>
+      <button onclick="adminGiveSkin(1)">Получить скин 1</button>
+      <button onclick="adminGiveSkin(2)">Получить скин 2</button>
+      <button onclick="unlockAllSkins()" class="btn-warning">Разблокировать все скины</button>
+      <button onclick="resetProgress()" class="btn-danger">Сбросить прогресс</button>
     </div>
   </div>
+
+  <!-- Подложка -->
+  <div id="adminOverlay" class="admin-overlay" onclick="toggleAdminPanel()"></div>
 
   <script src="script.js"></script>
 </body>
 </html>
-
