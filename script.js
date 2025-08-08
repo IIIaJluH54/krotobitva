@@ -22,15 +22,15 @@ let upgrades = [
 
 let skins = [
   { src: "assets/krot.png", name: "Обычный", unlocked: true },
-  { src: "assets/krot_hat.png", name: "Каска", unlocked: false },
-  { src: "assets/krot_glasses.png", name: "Очки", unlocked: false }
+  { src: "assets/krot_hat.png", name: "Каска", unlocked: true },  // Разблокированы для теста
+  { src: "assets/krot_glasses.png", name: "Очки", unlocked: true }
 ];
 let currentSkin = 0;
 
 let adminCode = "";
 const ADMIN_SECRET = "KROT";
 
-// === Загрузка ===
+// === Загрузка прогресса ===
 function loadGame() {
   try {
     const saved = localStorage.getItem("krotobitva_v6");
@@ -46,6 +46,7 @@ function loadGame() {
       skins = data.skins || skins;
       currentSkin = data.currentSkin || 0;
 
+      // Восстановление монет за время отсутствия
       const secondsPassed = (Date.now() - (data.lastSave || Date.now())) / 1000;
       if (autoCPS > 0 && secondsPassed > 0) {
         coins += autoCPS * secondsPassed;
@@ -55,6 +56,9 @@ function loadGame() {
   } catch (e) {
     console.error("Ошибка загрузки:", e);
   }
+
+  // Убедиться, что крот и скины загружены
+  updateDisplay();
 }
 
 // === Сохранение ===
@@ -72,7 +76,7 @@ function saveGame() {
   }
 }
 
-// === Старт ===
+// === Старт игры ===
 window.onload = () => {
   loadGame();
   updateDisplay();
@@ -82,36 +86,52 @@ window.onload = () => {
 
 // === Обновление интерфейса ===
 function updateDisplay() {
-  document.getElementById("coins").textContent = Math.floor(coins);
-  document.getElementById("diamonds").textContent = diamonds;
-  document.getElementById("profileCoins").textContent = Math.floor(coins);
-  document.getElementById("profileDiamonds").textContent = diamonds;
+  // Обновление баланса
+  const coinsEl = document.getElementById("coins");
+  const diamondsEl = document.getElementById("diamonds");
+  if (coinsEl) coinsEl.textContent = Math.floor(coins);
+  if (diamondsEl) diamondsEl.textContent = diamonds;
+
+  // Обновление профиля
+  const profileCoinsEl = document.getElementById("profileCoins");
+  const profileDiamondsEl = document.getElementById("profileDiamonds");
+  if (profileCoinsEl) profileCoinsEl.textContent = Math.floor(coins);
+  if (profileDiamondsEl) profileDiamondsEl.textContent = diamonds;
+
+  // Обновление таймеров
   updateTimers();
+
+  // Обновление улучшений и скинов
   renderUpgrades();
   renderSkins();
 
+  // Обновление крота на главной
+  const krotImg = document.getElementById("krot");
+  if (krotImg && skins[currentSkin]) {
+    krotImg.src = skins[currentSkin].src;
+  }
+
+  // Показ админ-вкладки
   if (window.adminVisible && !document.getElementById("admin-tab")) {
     const btn = document.createElement("button");
     btn.id = "admin-tab";
     btn.innerHTML = "🛠️";
     btn.onclick = () => switchPage("admin");
-    document.querySelector(".bottom-nav").appendChild(btn);
+    const nav = document.querySelector(".bottom-nav");
+    if (nav) nav.appendChild(btn);
   }
 }
 
-// === Переключение страниц — ИСПРАВЛЕНО ===
+// === Переключение страниц ===
 function switchPage(pageId) {
-  // Скрыть все экраны
   document.querySelectorAll(".screen").forEach(screen => {
     screen.classList.add("hidden");
   });
 
-  // Показать нужный
   const target = document.getElementById(pageId);
   if (target) {
     target.classList.remove("hidden");
   } else {
-    console.error("Страница не найдена:", pageId);
     document.getElementById("gameScreen").classList.remove("hidden");
   }
 }
@@ -124,46 +144,53 @@ function updateTimers() {
   const dailyBtn = document.getElementById("dailyBtn");
   if (dailyBtn) {
     dailyBtn.disabled = now - dailyRewardClaimedAt < day;
-    document.getElementById("dailyTimer").textContent = 
-      now - dailyRewardClaimedAt < day 
-        ? `Через ${Math.ceil((day - (now - dailyRewardClaimedAt)) / 3600000)} ч` 
+    const timer = document.getElementById("dailyTimer");
+    if (timer) {
+      timer.textContent = now - dailyRewardClaimedAt < day
+        ? `Через ${Math.ceil((day - (now - dailyRewardClaimedAt)) / 3600000)} ч`
         : "";
+    }
   }
 
   const chestBtn = document.getElementById("chestBtn");
   if (chestBtn) {
     chestBtn.disabled = now - chestClaimedAt < day;
-    document.getElementById("chestTimer").textContent = 
-      now - chestClaimedAt < day 
-        ? `Через ${Math.ceil((day - (now - chestClaimedAt)) / 3600000)} ч` 
+    const timer = document.getElementById("chestTimer");
+    if (timer) {
+      timer.textContent = now - chestClaimedAt < day
+        ? `Через ${Math.ceil((day - (now - chestClaimedAt)) / 3600000)} ч`
         : "";
+    }
   }
 }
 
-// === Клик ===
-document.getElementById("krot").addEventListener("click", () => {
-  coins += clickPower;
-  updateDisplay();
-  saveGame();
+// === Клик по кроту ===
+document.addEventListener("click", (e) => {
+  if (e.target.id === "krot") {
+    coins += clickPower;
+    updateDisplay();
+    saveGame();
 
-  const pop = document.createElement("div");
-  pop.textContent = `+${clickPower}`;
-  pop.style.cssText = `
-    position: absolute;
-    color: #0f0;
-    font-weight: bold;
-    pointer-events: none;
-    animation: pop-up 1s ease-out forwards;
-  `;
-  pop.style.left = event.clientX - 20 + "px";
-  pop.style.top = event.clientY - 20 + "px";
-  document.body.appendChild(pop);
-  setTimeout(() => document.body.removeChild(pop), 1000);
+    const pop = document.createElement("div");
+    pop.textContent = `+${clickPower}`;
+    pop.style.cssText = `
+      position: absolute;
+      color: #0f0;
+      font-weight: bold;
+      pointer-events: none;
+      animation: pop-up 1s ease-out forwards;
+    `;
+    pop.style.left = e.clientX - 20 + "px";
+    pop.style.top = e.clientY - 20 + "px";
+    document.body.appendChild(pop);
+    setTimeout(() => document.body.removeChild(pop), 1000);
+  }
 });
 
 // === Улучшения ===
 function renderUpgrades() {
   const container = document.getElementById("upgradesList");
+  if (!container) return;
   container.innerHTML = "";
   upgrades.forEach((u, i) => {
     const div = document.createElement("div");
@@ -240,22 +267,38 @@ function adminForceChest() {
 // === Скины ===
 function renderSkins() {
   const container = document.getElementById("skinList");
+  if (!container) return;
   container.innerHTML = "";
-  skins.forEach((s, i) => {
-    if (s.unlocked) {
+
+  skins.forEach((skin, index) => {
+    if (skin.unlocked) {
       const img = document.createElement("img");
-      img.src = s.src;
-      img.onclick = () => equipSkin(i);
-      if (i === currentSkin) img.classList.add("active");
+      img.src = skin.src;
+      img.alt = skin.name;
+      img.title = skin.name;
+      img.className = index === currentSkin ? "active" : "";
+      img.onclick = () => equipSkin(index);
       container.appendChild(img);
     }
   });
 }
 
+// === ВАЖНО: Функция, которая меняет крота на главной ===
 function equipSkin(index) {
+  if (!skins[index] || !skins[index].unlocked) return;
+
   currentSkin = index;
-  document.getElementById("krot").src = skins[index].src;
+
+  // Обновляем изображение на главной
+  const krotImg = document.getElementById("krot");
+  if (krotImg) {
+    krotImg.src = skins[index].src;
+  }
+
+  // Обновляем выделение в меню
   renderSkins();
+
+  // Сохраняем
   saveGame();
   showToast(`Скин: ${skins[index].name}`);
 }
@@ -263,7 +306,9 @@ function equipSkin(index) {
 // === Админ-панель ===
 document.addEventListener("keydown", (e) => {
   adminCode += e.key.toUpperCase();
-  if (adminCode.length > ADMIN_SECRET.length) adminCode = adminCode.slice(-ADMIN_SECRET.length);
+  if (adminCode.length > ADMIN_SECRET.length) {
+    adminCode = adminCode.slice(-ADMIN_SECRET.length);
+  }
   if (adminCode === ADMIN_SECRET) {
     window.adminVisible = true;
     switchPage("admin");
@@ -296,9 +341,11 @@ function resetProgress() {
 // === Уведомления ===
 function showToast(msg) {
   const toast = document.getElementById("toast");
-  toast.textContent = msg;
-  toast.style.opacity = "1";
-  setTimeout(() => {
-    toast.style.opacity = "0";
-  }, 2000);
+  if (toast) {
+    toast.textContent = msg;
+    toast.style.opacity = "1";
+    setTimeout(() => {
+      toast.style.opacity = "0";
+    }, 2000);
+  }
 }
