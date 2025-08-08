@@ -30,10 +30,10 @@ let currentSkin = 0;
 let adminCode = "";
 const ADMIN_SECRET = "KROT";
 
-// === Загрузка прогресса ===
+// === Загрузка ===
 function loadGame() {
   try {
-    const saved = localStorage.getItem("krotobitva_v5");
+    const saved = localStorage.getItem("krotobitva_v6");
     if (saved) {
       const data = JSON.parse(saved);
       coins = data.coins || 0;
@@ -46,7 +46,6 @@ function loadGame() {
       skins = data.skins || skins;
       currentSkin = data.currentSkin || 0;
 
-      // Восстановление монет за время отсутствия
       const secondsPassed = (Date.now() - (data.lastSave || Date.now())) / 1000;
       if (autoCPS > 0 && secondsPassed > 0) {
         coins += autoCPS * secondsPassed;
@@ -67,18 +66,18 @@ function saveGame() {
     lastSave: Date.now()
   };
   try {
-    localStorage.setItem("krotobitva_v5", JSON.stringify(data));
+    localStorage.setItem("krotobitva_v6", JSON.stringify(data));
   } catch (e) {
     console.error("Ошибка сохранения:", e);
   }
 }
 
-// === Старт игры ===
+// === Старт ===
 window.onload = () => {
   loadGame();
   updateDisplay();
-  setInterval(saveGame, 15000); // Автосохранение
-  setInterval(updateTimers, 60000); // Обновление таймеров
+  setInterval(saveGame, 15000);
+  setInterval(updateTimers, 60000);
 };
 
 // === Обновление интерфейса ===
@@ -91,7 +90,6 @@ function updateDisplay() {
   renderUpgrades();
   renderSkins();
 
-  // Показ админ-вкладки при активации
   if (window.adminVisible && !document.getElementById("admin-tab")) {
     const btn = document.createElement("button");
     btn.id = "admin-tab";
@@ -101,10 +99,21 @@ function updateDisplay() {
   }
 }
 
-// === Страницы ===
-function switchPage(page) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
-  document.getElementById(page).classList.remove("hidden");
+// === Переключение страниц — ИСПРАВЛЕНО ===
+function switchPage(pageId) {
+  // Скрыть все экраны
+  document.querySelectorAll(".screen").forEach(screen => {
+    screen.classList.add("hidden");
+  });
+
+  // Показать нужный
+  const target = document.getElementById(pageId);
+  if (target) {
+    target.classList.remove("hidden");
+  } else {
+    console.error("Страница не найдена:", pageId);
+    document.getElementById("gameScreen").classList.remove("hidden");
+  }
 }
 
 // === Таймеры ===
@@ -112,7 +121,6 @@ function updateTimers() {
   const now = Date.now();
   const day = 86400000;
 
-  // Ежедневная награда
   const dailyBtn = document.getElementById("dailyBtn");
   if (dailyBtn) {
     dailyBtn.disabled = now - dailyRewardClaimedAt < day;
@@ -122,7 +130,6 @@ function updateTimers() {
         : "";
   }
 
-  // Сундук
   const chestBtn = document.getElementById("chestBtn");
   if (chestBtn) {
     chestBtn.disabled = now - chestClaimedAt < day;
@@ -281,7 +288,7 @@ function adminAddDiamonds(amount) {
 
 function resetProgress() {
   if (confirm("Сбросить прогресс?")) {
-    localStorage.removeItem("krotobitva_v5");
+    localStorage.removeItem("krotobitva_v6");
     location.reload();
   }
 }
@@ -291,5 +298,7 @@ function showToast(msg) {
   const toast = document.getElementById("toast");
   toast.textContent = msg;
   toast.style.opacity = "1";
-  setTimeout(() => toast.style.opacity = "0", 2000);
+  setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2000);
 }
