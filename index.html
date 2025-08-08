@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="cyber">
-  <!-- Игровой экран -->
+  <!-- Главный экран -->
   <div id="gameScreen" class="screen">
     <header>
       <h1>Крото Битва</h1>
@@ -29,7 +29,7 @@
   <!-- Улучшения -->
   <div id="upgrades" class="screen hidden page">
     <header>
-      <button class="back" onclick="switchPage('game')">←</button>
+      <button class="back" onclick="switchPage('game')">← Назад</button>
       <h2>Улучшения</h2>
     </header>
     <div id="upgradesList"></div>
@@ -38,7 +38,7 @@
   <!-- Награды -->
   <div id="rewards" class="screen hidden page">
     <header>
-      <button class="back" onclick="switchPage('game')">←</button>
+      <button class="back" onclick="switchPage('game')">← Назад</button>
       <h2>Награды</h2>
     </header>
     <button id="dailyBtn" onclick="claimDaily()">Ежедневная награда</button>
@@ -50,7 +50,7 @@
   <!-- Профиль -->
   <div id="profile" class="screen hidden page">
     <header>
-      <button class="back" onclick="switchPage('game')">←</button>
+      <button class="back" onclick="switchPage('game')">← Назад</button>
       <h2>Профиль</h2>
     </header>
     <p>Монет: <b id="profileCoins">0</b></p>
@@ -58,10 +58,10 @@
     <div class="skin-list" id="skinList"></div>
   </div>
 
-  <!-- Админ-панель (скрыта) -->
+  <!-- Админ-панель -->
   <div id="admin" class="screen hidden page">
     <header>
-      <button class="back" onclick="switchPage('game')">←</button>
+      <button class="back" onclick="switchPage('game')">← Назад</button>
       <h2>🛠️ Админ-панель</h2>
     </header>
     <button onclick="adminAddCoins(1000)">+1000 монет</button>
