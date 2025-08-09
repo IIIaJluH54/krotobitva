@@ -1,0 +1,2676 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Крото Битва - Киберпанк</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', 'Arial', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            color: #00ff41;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 255, 65, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(132, 0, 255, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(10, 10, 20, 0.9);
+            border: 2px solid #00ff41;
+            border-radius: 15px;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 65, 0.3),
+                inset 0 0 20px rgba(0, 255, 65, 0.1);
+            overflow: hidden;
+            position: relative;
+            min-height: 500px;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff41, transparent);
+            animation: scanline 3s linear infinite;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        
+        .logout-top {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 65, 65, 0.2);
+            border: 1px solid #ff4141;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            opacity: 0.7;
+            touch-action: manipulation;
+        }
+        
+        .logout-top:hover {
+            opacity: 1;
+            background: rgba(255, 65, 65, 0.4);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 65, 65, 0.6);
+        }
+        
+        .logout-top::before {
+            content: '✕';
+            color: #ff4141;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .screen {
+            padding: 20px;
+            display: none;
+            position: relative;
+            min-height: 400px;
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00ff41;
+            margin-bottom: 15px;
+            font-size: 24px;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.7);
+            letter-spacing: 1px;
+            position: relative;
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+            }
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00ff41, transparent);
+        }
+        
+        h2 {
+            color: #00ff41;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+            font-size: 18px;
+        }
+        
+        @media (max-width: 480px) {
+            h2 {
+                font-size: 16px;
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .form-group::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00ff41, transparent);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #00ff41;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+            font-size: 14px;
+        }
+        
+        @media (max-width: 480px) {
+            label {
+                font-size: 12px;
+            }
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+            background: rgba(0, 20, 10, 0.7);
+            color: #00ff41;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+        }
+        
+        @media (max-width: 480px) {
+            input {
+                padding: 10px;
+                font-size: 13px;
+            }
+        }
+        
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+            border-color: #00ffaa;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #003b00, #001100);
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+            touch-action: manipulation;
+        }
+        
+        @media (max-width: 480px) {
+            button {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #005500, #002200);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.4), transparent);
+            transition: 0.5s;
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        .switch-form {
+            text-align: center;
+            margin-top: 15px;
+            color: #00aa44;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 480px) {
+            .switch-form {
+                font-size: 12px;
+            }
+        }
+        
+        .switch-form a {
+            color: #00ffaa;
+            text-decoration: none;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
+            position: relative;
+        }
+        
+        .switch-form a:hover {
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.8);
+        }
+        
+        .switch-form a::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #00ffaa;
+            transition: width 0.3s;
+        }
+        
+        .switch-form a:hover::after {
+            width: 100%;
+        }
+        
+        .game-container {
+            text-align: center;
+            padding: 15px 0;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+        }
+        
+        .mole-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 15px auto;
+        }
+        
+        .mole-image {
+            width: 180px;
+            height: 180px;
+            cursor: pointer;
+            transition: all 0.1s;
+            user-select: none;
+            border-radius: 50%;
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: float 3s ease-in-out infinite;
+            display: block;
+            touch-action: manipulation;
+        }
+        
+        @media (max-width: 480px) {
+            .mole-image {
+                width: 150px;
+                height: 150px;
+            }
+        }
+        
+        @media (max-width: 320px) {
+            .mole-image {
+                width: 130px;
+                height: 130px;
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .mole-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 60%, rgba(0, 255, 65, 0.1));
+            pointer-events: none;
+        }
+        
+        .mole-image:active {
+            transform: scale(0.92) !important;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.6);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            background: rgba(0, 30, 15, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+        
+        @media (max-width: 480px) {
+            .stats {
+                padding: 10px;
+                margin: 10px 0;
+            }
+        }
+        
+        .stat-item {
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ff41;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.7);
+        }
+        
+        @media (max-width: 480px) {
+            .stat-value {
+                font-size: 18px;
+            }
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #00aa44;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        @media (max-width: 480px) {
+            .stat-label {
+                font-size: 10px;
+            }
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 480px) {
+            .message {
+                padding: 10px;
+                font-size: 12px;
+                margin: 10px 0;
+            }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .success {
+            background: rgba(0, 40, 0, 0.3);
+            color: #00ff41;
+            border-color: #00ff41;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+        
+        .error {
+            background: rgba(40, 0, 0, 0.3);
+            color: #ff4141;
+            border-color: #ff4141;
+            box-shadow: 0 0 15px rgba(255, 65, 65, 0.3);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(0, 255, 65, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #00ff41;
+            width: 35px;
+            height: 35px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+        
+        @media (max-width: 480px) {
+            .spinner {
+                width: 30px;
+                height: 30px;
+            }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .glitch {
+            position: relative;
+            animation: glitch-text 5s infinite;
+        }
+        
+        @keyframes glitch-text {
+            0%, 100% { transform: translate(0); }
+            10% { transform: translate(-1px, 1px); }
+            20% { transform: translate(1px, -1px); }
+            30% { transform: translate(-1px, -1px); }
+            40% { transform: translate(1px, 1px); }
+        }
+        
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch::before {
+            left: 1px;
+            text-shadow: -1px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        
+        .glitch::after {
+            left: -1px;
+            text-shadow: -1px 0 #00fff9, 1px 1px #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+        
+        @keyframes glitch-anim {
+            0% { clip: rect(42px, 9999px, 44px, 0); }
+            5% { clip: rect(12px, 9999px, 59px, 0); }
+            10% { clip: rect(48px, 9999px, 29px, 0); }
+            15% { clip: rect(42px, 9999px, 73px, 0); }
+            20% { clip: rect(63px, 9999px, 27px, 0); }
+            25% { clip: rect(34px, 9999px, 55px, 0); }
+            30% { clip: rect(86px, 9999px, 73px, 0); }
+            35% { clip: rect(20px, 9999px, 20px, 0); }
+            40% { clip: rect(26px, 9999px, 60px, 0); }
+            45% { clip: rect(25px, 9999px, 66px, 0); }
+            50% { clip: rect(57px, 9999px, 98px, 0); }
+            55% { clip: rect(5px, 9999px, 46px, 0); }
+            60% { clip: rect(82px, 9999px, 31px, 0); }
+            65% { clip: rect(54px, 9999px, 27px, 0); }
+            70% { clip: rect(28px, 9999px, 99px, 0); }
+            75% { clip: rect(45px, 9999px, 69px, 0); }
+            80% { clip: rect(23px, 9999px, 85px, 0); }
+            85% { clip: rect(1px, 9999px, 83px, 0); }
+            90% { clip: rect(72px, 9999px, 11px, 0); }
+            95% { clip: rect(60px, 9999px, 89px, 0); }
+            100% { clip: rect(52px, 9999px, 74px, 0); }
+        }
+        
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 100px, 0); }
+            5% { clip: rect(52px, 9999px, 74px, 0); }
+            10% { clip: rect(79px, 9999px, 85px, 0); }
+            15% { clip: rect(75px, 9999px, 5px, 0); }
+            20% { clip: rect(67px, 9999px, 61px, 0); }
+            25% { clip: rect(14px, 9999px, 79px, 0); }
+            30% { clip: rect(1px, 9999px, 66px, 0); }
+            35% { clip: rect(86px, 9999px, 30px, 0); }
+            40% { clip: rect(23px, 9999px, 98px, 0); }
+            45% { clip: rect(85px, 9999px, 72px, 0); }
+            50% { clip: rect(71px, 9999px, 75px, 0); }
+            55% { clip: rect(2px, 9999px, 48px, 0); }
+            60% { clip: rect(30px, 9999px, 16px, 0); }
+            65% { clip: rect(59px, 9999px, 50px, 0); }
+            70% { clip: rect(41px, 9999px, 62px, 0); }
+            75% { clip: rect(2px, 9999px, 82px, 0); }
+            80% { clip: rect(47px, 9999px, 73px, 0); }
+            85% { clip: rect(3px, 9999px, 27px, 0); }
+            90% { clip: rect(26px, 9999px, 55px, 0); }
+            95% { clip: rect(42px, 9999px, 97px, 0); }
+            100% { clip: rect(38px, 9999px, 49px, 0); }
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        
+        .tap-effect {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #00ff41;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: tap-ripple 0.6s ease-out;
+            transform: translate(-50%, -50%);
+            left: 0;
+            top: 0;
+        }
+        
+        @media (max-width: 480px) {
+            .tap-effect {
+                width: 35px;
+                height: 35px;
+            }
+        }
+        
+        @keyframes tap-ripple {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2.5);
+                opacity: 0;
+            }
+        }
+        
+        .level-up {
+            animation: levelUp 1s ease-out;
+        }
+        
+        @keyframes levelUp {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(0.9); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Навигация */
+        .nav-tabs {
+            display: flex;
+            margin: 15px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+            flex-wrap: wrap;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 70px;
+        }
+        
+        @media (max-width: 480px) {
+            .nav-tab {
+                padding: 8px 4px;
+                font-size: 10px;
+            }
+        }
+        
+        .nav-tab.active {
+            border-bottom: 2px solid #00ff41;
+            color: #00ff41;
+        }
+        
+        .nav-tab:not(.active):hover {
+            background: rgba(0, 255, 65, 0.1);
+        }
+        
+        /* Таблица лидеров */
+        .leaderboard-container {
+            margin-top: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .leaderboard-header {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 30, 15, 0.5);
+            padding: 12px;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+        
+        .leaderboard-item:hover {
+            background: rgba(0, 255, 65, 0.1);
+        }
+        
+        .leaderboard-rank {
+            width: 35px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .leaderboard-username {
+            flex: 1;
+            text-align: left;
+            padding: 0 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .leaderboard-score {
+            width: 90px;
+            text-align: right;
+            font-weight: bold;
+            color: #00ff41;
+        }
+        
+        .refresh-btn {
+            width: auto;
+            padding: 10px 20px;
+            font-size: 14px;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .auto-refresh {
+            text-align: center;
+            font-size: 12px;
+            color: #00aa44;
+            margin-top: 10px;
+        }
+        
+        .auto-refresh span {
+            color: #00ff41;
+            font-weight: bold;
+        }
+        
+        /* Достижения */
+        .achievements-container {
+            margin-top: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .achievement-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            font-size: 13px;
+            background: rgba(0, 20, 10, 0.2);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 255, 65, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .achievement-locked {
+            background: rgba(100, 100, 100, 0.2);
+            opacity: 0.5;
+        }
+        
+        .achievement-info {
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        .achievement-name {
+            font-weight: bold;
+            color: #00ff41;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-desc {
+            font-size: 12px;
+            color: #00aa44;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-reward {
+            font-size: 12px;
+            color: #ffaa00;
+            font-weight: bold;
+        }
+        
+        .achievement-claim-btn {
+            padding: 8px 12px;
+            font-size: 11px;
+            background: linear-gradient(135deg, #ff8c00, #ff4500);
+            border: 1px solid #ffaa00;
+            flex-shrink: 0;
+            height: fit-content;
+            align-self: center;
+        }
+        
+        .achievement-claimed {
+            background: linear-gradient(135deg, #333, #222);
+            border: 1px solid #555;
+            opacity: 0.7;
+        }
+        
+        /* Ежедневные награды */
+        .daily-reward-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .daily-reward-info {
+            background: rgba(0, 30, 15, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .daily-streak {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff41;
+            margin-bottom: 10px;
+        }
+        
+        .daily-timer {
+            font-size: 14px;
+            color: #00aa44;
+            margin-bottom: 15px;
+        }
+        
+        .daily-reward-btn {
+            background: linear-gradient(135deg, #ff8c00, #ff4500);
+            border: 1px solid #ffaa00;
+        }
+        
+        .daily-reward-btn:disabled {
+            background: linear-gradient(135deg, #333, #222);
+            border: 1px solid #555;
+            opacity: 0.5;
+        }
+        
+        /* Скины */
+        .skins-container {
+            margin-top: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .skin-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+            font-size: 14px;
+            background: rgba(0, 20, 10, 0.2);
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .skin-info {
+            flex: 1;
+            text-align: left;
+        }
+        
+        .skin-name {
+            font-weight: bold;
+            color: #00ff41;
+        }
+        
+        .skin-price {
+            font-size: 13px;
+            color: #ffaa00;
+            margin-top: 5px;
+        }
+        
+        .skin-owned {
+            font-size: 12px;
+            color: #00ff41;
+            margin-top: 5px;
+        }
+        
+        .skin-equip-btn {
+            padding: 8px 15px;
+            font-size: 12px;
+            background: linear-gradient(135deg, #003b00, #001100);
+        }
+        
+        .skin-buy-btn {
+            padding: 8px 15px;
+            font-size: 12px;
+            background: linear-gradient(135deg, #ff8c00, #ff4500);
+        }
+        
+        .skin-current {
+            background: rgba(0, 255, 65, 0.2);
+        }
+        
+        /* Бонусные предметы */
+        .bonus-container {
+            margin-top: 20px;
+        }
+        
+        .bonus-shop {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .bonus-item {
+            background: rgba(0, 30, 15, 0.3);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .bonus-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.3);
+        }
+        
+        .bonus-item:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .bonus-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #00ff41;
+        }
+        
+        .bonus-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #00ff41;
+            margin-bottom: 5px;
+        }
+        
+        .bonus-price {
+            font-size: 12px;
+            color: #ffaa00;
+            margin-bottom: 10px;
+        }
+        
+        .bonus-count {
+            font-size: 12px;
+            color: #00ff41;
+            font-weight: bold;
+        }
+        
+        .inventory-title {
+            text-align: center;
+            margin: 20px 0 10px 0;
+            color: #00ff41;
+            font-size: 16px;
+        }
+        
+        .inventory-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        /* Специальные события */
+        .events-container {
+            margin-top: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .event-item {
+            background: rgba(0, 30, 15, 0.3);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .event-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #00ff41;
+            margin-bottom: 10px;
+        }
+        
+        .event-desc {
+            font-size: 13px;
+            color: #00aa44;
+            margin-bottom: 10px;
+        }
+        
+        .event-progress {
+            height: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .event-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff41, #00aa44);
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+        
+        .event-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #00aa44;
+        }
+        
+        .event-reward {
+            font-size: 13px;
+            color: #ffaa00;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        /* Скроллбар */
+        .leaderboard-container::-webkit-scrollbar,
+        .achievements-container::-webkit-scrollbar,
+        .skins-container::-webkit-scrollbar,
+        .events-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .leaderboard-container::-webkit-scrollbar-track,
+        .achievements-container::-webkit-scrollbar-track,
+        .skins-container::-webkit-scrollbar-track,
+        .events-container::-webkit-scrollbar-track {
+            background: rgba(0, 20, 10, 0.3);
+        }
+        
+        .leaderboard-container::-webkit-scrollbar-thumb,
+        .achievements-container::-webkit-scrollbar-thumb,
+        .skins-container::-webkit-scrollbar-thumb,
+        .events-container::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 3px;
+        }
+        
+        /* Адаптация для очень маленьких экранов */
+        @media (max-height: 600px) {
+            .container {
+                min-height: 450px;
+            }
+            
+            .screen {
+                padding: 15px;
+                min-height: 350px;
+            }
+            
+            .mole-image {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .game-container {
+                min-height: 250px;
+            }
+        }
+        
+        /* Адаптация для планшетов */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .container {
+                max-width: 600px;
+            }
+            
+            .mole-image {
+                width: 220px;
+                height: 220px;
+            }
+            
+            .stat-value {
+                font-size: 22px;
+            }
+            
+            h1 {
+                font-size: 26px;
+            }
+        }
+        
+        /* Адаптация для десктопов */
+        @media (min-width: 1025px) {
+            .container {
+                max-width: 650px;
+            }
+            
+            .mole-image {
+                width: 240px;
+                height: 240px;
+            }
+            
+            .stat-value {
+                font-size: 24px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            button {
+                font-size: 18px;
+            }
+            
+            .nav-tab {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+        
+        /* Оптимизация для сенсорных устройств */
+        @media (hover: none) and (pointer: coarse) {
+            .logout-top:hover {
+                opacity: 0.7;
+                background: rgba(255, 65, 65, 0.2);
+                transform: scale(1);
+                box-shadow: none;
+            }
+            
+            button:hover {
+                background: linear-gradient(135deg, #003b00, #001100);
+                box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+                transform: translateY(0);
+            }
+            
+            .switch-form a:hover {
+                text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
+            }
+            
+            .switch-form a:hover::after {
+                width: 0;
+            }
+            
+            .nav-tab.active {
+                background: rgba(0, 255, 65, 0.1);
+            }
+        }
+        
+        /* Фикс для iOS Safari */
+        input, button {
+            -webkit-appearance: none;
+            border-radius: 5px;
+        }
+        
+        /* Улучшенная поддержка касаний */
+        .tap-highlight {
+            -webkit-tap-highlight-color: rgba(0, 255, 65, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrix"></canvas>
+    
+    <div class="container">
+        <!-- Экран загрузки -->
+        <div id="loading-screen" class="screen active">
+            <div class="loading">
+                <div class="spinner"></div>
+                <h2>ЗАГРУЗКА СИСТЕМЫ...</h2>
+            </div>
+        </div>
+        
+        <!-- Экран регистрации -->
+        <div id="register-screen" class="screen">
+            <h1 class="glitch" data-text="КРОТО БИТВА">КРОТО БИТВА</h1>
+            <h2>РЕГИСТРАЦИЯ</h2>
+            <div id="register-message" class="message hidden"></div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-username">ЛОГИН</label>
+                    <input type="text" id="register-username" required minlength="3" maxlength="20" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">ПАРОЛЬ</label>
+                    <input type="password" id="register-password" required minlength="6" autocomplete="new-password">
+                </div>
+                <button type="submit">СОЗДАТЬ АККАУНТ</button>
+            </form>
+            <div class="switch-form">
+                УЖЕ В СИСТЕМЕ? <a href="#" id="show-login">ВХОД</a>
+            </div>
+        </div>
+        
+        <!-- Экран входа -->
+        <div id="login-screen" class="screen">
+            <h1 class="glitch" data-text="КРОТО БИТВА">КРОТО БИТВА</h1>
+            <h2>АВТОРИЗАЦИЯ</h2>
+            <div id="login-message" class="message hidden"></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">ЛОГИН</label>
+                    <input type="text" id="login-username" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">ПАРОЛЬ</label>
+                    <input type="password" id="login-password" required autocomplete="current-password">
+                </div>
+                <button type="submit">ВОЙТИ В СИСТЕМУ</button>
+            </form>
+            <div class="switch-form">
+                НЕТ АККАУНТА? <a href="#" id="show-register">РЕГИСТРАЦИЯ</a>
+            </div>
+        </div>
+        
+        <!-- Игровой экран -->
+        <div id="game-screen" class="screen">
+            <div class="logout-top" id="logout-top" title="Выход"></div>
+            <h1 class="glitch" data-text="КРОТО БИТВА">КРОТО БИТВА</h1>
+            
+            <!-- Навигационные вкладки -->
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-tab="game">ИГРА</div>
+                <div class="nav-tab" data-tab="leaderboard">ЛИДЕРЫ</div>
+                <div class="nav-tab" data-tab="achievements">ДОСТИЖЕНИЯ</div>
+                <div class="nav-tab" data-tab="daily">НАГРАДЫ</div>
+                <div class="nav-tab" data-tab="skins">СКИНЫ</div>
+                <div class="nav-tab" data-tab="bonus">БОНУСЫ</div>
+                <div class="nav-tab" data-tab="events">СОБЫТИЯ</div>
+            </div>
+            
+            <!-- Игровая вкладка -->
+            <div id="game-tab" class="tab-content">
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="coins">0</div>
+                        <div class="stat-label">МОНЕТЫ</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="level">1</div>
+                        <div class="stat-label">УРОВЕНЬ</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="clicks">0</div>
+                        <div class="stat-label">УДАРЫ</div>
+                    </div>
+                </div>
+                <div class="game-container">
+                    <div class="mole-wrapper">
+                        <img src="/mouse.png" alt="Кибер Крот" class="mole-image" id="mole">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вкладка таблицы лидеров -->
+            <div id="leaderboard-tab" class="tab-content hidden">
+                <div class="leaderboard-container">
+                    <div class="leaderboard-header">
+                        <div class="leaderboard-rank">#</div>
+                        <div class="leaderboard-username">ИГРОК</div>
+                        <div class="leaderboard-score">МОНЕТЫ</div>
+                    </div>
+                    <div id="leaderboard-list">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>ЗАГРУЗКА ЛИДЕРОВ...</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="refresh-btn" id="refresh-leaderboard">ОБНОВИТЬ</button>
+                <div class="auto-refresh">Автообновление: <span id="refresh-timer">30</span>с</div>
+            </div>
+            
+            <!-- Вкладка достижений -->
+            <div id="achievements-tab" class="tab-content hidden">
+                <div class="achievements-container">
+                    <div id="achievements-list">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>ЗАГРУЗКА ДОСТИЖЕНИЙ...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вкладка ежедневных наград -->
+            <div id="daily-tab" class="tab-content hidden">
+                <div class="daily-reward-container">
+                    <div class="daily-reward-info">
+                        <div class="daily-streak">Серия дней: <span id="streak-count">0</span></div>
+                        <div class="daily-timer" id="daily-timer">Следующая награда доступна</div>
+                        <button class="daily-reward-btn" id="claim-daily-reward">ПОЛУЧИТЬ НАГРАДУ</button>
+                    </div>
+                    <div id="daily-message" class="message hidden"></div>
+                </div>
+            </div>
+            
+            <!-- Вкладка скинов -->
+            <div id="skins-tab" class="tab-content hidden">
+                <div class="skins-container">
+                    <div id="skins-list">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>ЗАГРУЗКА СКИНОВ...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вкладка бонусов -->
+            <div id="bonus-tab" class="tab-content hidden">
+                <div class="bonus-container">
+                    <h2 style="text-align: center; margin-bottom: 20px;">МАГАЗИН БОНУСОВ</h2>
+                    <div class="bonus-shop" id="bonus-shop">
+                        <div class="bonus-item" data-item="double_points">
+                            <div class="bonus-icon">⚡</div>
+                            <div class="bonus-name">Удвоение монет</div>
+                            <div class="bonus-price">200 монет</div>
+                        </div>
+                        <div class="bonus-item" data-item="auto_click">
+                            <div class="bonus-icon">🖱️</div>
+                            <div class="bonus-name">Автоклик</div>
+                            <div class="bonus-price">150 монет</div>
+                        </div>
+                        <div class="bonus-item" data-item="coin_boost">
+                            <div class="bonus-icon">💎</div>
+                            <div class="bonus-name">Бонус монет</div>
+                            <div class="bonus-price">100 монет</div>
+                        </div>
+                        <div class="bonus-item" data-item="lucky_drop">
+                            <div class="bonus-icon">🎁</div>
+                            <div class="bonus-name">Удачный дроп</div>
+                            <div class="bonus-price">300 монет</div>
+                        </div>
+                    </div>
+                    
+                    <div class="inventory-title">ИНВЕНТАРЬ</div>
+                    <div class="inventory-items" id="inventory-items">
+                        <div class="bonus-item" data-item="double_points">
+                            <div class="bonus-icon">⚡</div>
+                            <div class="bonus-name">Удвоение монет</div>
+                            <div class="bonus-count" id="double_points-count">0</div>
+                        </div>
+                        <div class="bonus-item" data-item="auto_click">
+                            <div class="bonus-icon">🖱️</div>
+                            <div class="bonus-name">Автоклик</div>
+                            <div class="bonus-count" id="auto_click-count">0</div>
+                        </div>
+                        <div class="bonus-item" data-item="coin_boost">
+                            <div class="bonus-icon">💎</div>
+                            <div class="bonus-name">Бонус монет</div>
+                            <div class="bonus-count" id="coin_boost-count">0</div>
+                        </div>
+                        <div class="bonus-item" data-item="lucky_drop">
+                            <div class="bonus-icon">🎁</div>
+                            <div class="bonus-name">Удачный дроп</div>
+                            <div class="bonus-count" id="lucky_drop-count">0</div>
+                        </div>
+                    </div>
+                    <div id="bonus-message" class="message hidden" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+            
+            <!-- Вкладка событий -->
+            <div id="events-tab" class="tab-content hidden">
+                <div class="events-container">
+                    <div id="events-list">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>ЗАГРУЗКА СОБЫТИЙ...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Матричный фон
+        function initMatrix() {
+            const canvas = document.getElementById('matrix');
+            const ctx = canvas.getContext('2d');
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            resizeCanvas();
+            
+            const chars = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%&*';
+            const charArray = chars.split('');
+            
+            let fontSize = Math.max(10, Math.min(16, window.innerWidth / 30));
+            let columns = Math.floor(canvas.width / fontSize);
+            
+            const drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#00ff41';
+                ctx.font = `${fontSize}px Orbitron`;
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = charArray[Math.floor(Math.random() * charArray.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    
+                    drops[i]++;
+                }
+            }
+            
+            const interval = setInterval(draw, 50);
+            
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                fontSize = Math.max(10, Math.min(16, window.innerWidth / 30));
+                columns = Math.floor(canvas.width / fontSize);
+                
+                // Обновляем массив капель
+                while (drops.length < columns) {
+                    drops.push(1);
+                }
+                drops.length = columns;
+            });
+            
+            // Очистка при выходе
+            window.addEventListener('beforeunload', () => {
+                clearInterval(interval);
+            });
+        }
+        
+        // Звуковая система
+        class SoundManager {
+            constructor() {
+                // Создание реальных звуков
+            }
+            
+            createTapSound() {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.1);
+                } catch (e) {
+                    console.log('Web Audio API не поддерживается');
+                }
+            }
+            
+            createLevelUpSound() {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    oscillator.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.3); // G5
+                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.3);
+                } catch (e) {
+                    console.log('Web Audio API не поддерживается');
+                }
+            }
+            
+            createLoginSound() {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime); // E5
+                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.2);
+                } catch (e) {
+                    console.log('Web Audio API не поддерживается');
+                }
+            }
+            
+            createLogoutSound() {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(329.63, audioCtx.currentTime); // E4
+                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.2);
+                } catch (e) {
+                    console.log('Web Audio API не поддерживается');
+                }
+            }
+            
+            createAchievementSound() {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime); // G5
+                    oscillator.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.5); // C6
+                    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.5);
+                } catch (e) {
+                    console.log('Web Audio API не поддерживается');
+                }
+            }
+            
+            play(soundName) {
+                // В реальной версии здесь будет воспроизведение звука
+                switch(soundName) {
+                    case 'tap':
+                        this.createTapSound();
+                        break;
+                    case 'levelUp':
+                        this.createLevelUpSound();
+                        break;
+                    case 'login':
+                        this.createLoginSound();
+                        break;
+                    case 'logout':
+                        this.createLogoutSound();
+                        break;
+                    case 'achievement':
+                        this.createAchievementSound();
+                        break;
+                }
+            }
+        }
+        
+        class Game {
+            constructor() {
+                this.token = localStorage.getItem('token');
+                this.user = null;
+                this.coins = 0;
+                this.level = 1;
+                this.clicks = 0;
+                this.saveTimeout = null;
+                this.soundManager = new SoundManager();
+                this.lastLevel = 1;
+                this.leaderboardInterval = null;
+                this.refreshTimer = 30;
+                this.achievements = {};
+                this.dailyStreak = 0;
+                this.lastDailyReward = null;
+                this.skins = ['default'];
+                this.currentSkin = 'default';
+                this.bonusItems = {};
+                this.eventProgress = {};
+                this.doublePointsActive = false;
+                this.doublePointsTime = 0;
+                this.init();
+            }
+            
+            init() {
+                initMatrix();
+                this.bindEvents();
+                this.checkAuth();
+                this.preventZoom();
+                this.initDailyTimer();
+            }
+            
+            // Предотвращение зума на мобильных устройствах
+            preventZoom() {
+                // Предотвращение зума пинчами
+                document.addEventListener('gesturestart', function(e) {
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('gesturechange', function(e) {
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('gestureend', function(e) {
+                    e.preventDefault();
+                });
+                
+                // Предотвращение зума двойным тапом
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', function(event) {
+                    const now = (new Date()).getTime();
+                    if (now - lastTouchEnd <= 300) {
+                        event.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, false);
+            }
+            
+            bindEvents() {
+                // Формы
+                document.getElementById('register-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.register();
+                });
+                
+                document.getElementById('login-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.login();
+                });
+                
+                document.getElementById('show-login').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showScreen('login-screen');
+                });
+                
+                document.getElementById('show-register').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showScreen('register-screen');
+                });
+                
+                document.getElementById('logout-top').addEventListener('click', () => {
+                    this.logout();
+                });
+                
+                // Игровая механика
+                document.getElementById('mole').addEventListener('click', (e) => {
+                    this.tap(e);
+                });
+                
+                // Поддержка тач-событий
+                document.getElementById('mole').addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.tap(e.touches[0]);
+                }, { passive: false });
+                
+                // Навигация по вкладкам
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        const tabName = e.target.getAttribute('data-tab');
+                        this.switchTab(tabName);
+                    });
+                });
+                
+                // Обновление таблицы лидеров
+                document.getElementById('refresh-leaderboard').addEventListener('click', () => {
+                    this.loadLeaderboard();
+                });
+                
+                // Ежедневные награды
+                document.getElementById('claim-daily-reward').addEventListener('click', () => {
+                    this.claimDailyReward();
+                });
+                
+                // Бонусные предметы - покупка
+                document.querySelectorAll('.bonus-item[data-item]').forEach(item => {
+                    if (item.closest('#bonus-shop')) {
+                        item.addEventListener('click', (e) => {
+                            const itemId = e.currentTarget.getAttribute('data-item');
+                            this.buyBonusItem(itemId);
+                        });
+                    }
+                });
+                
+                // Бонусные предметы - использование
+                document.querySelectorAll('.bonus-item[data-item]').forEach(item => {
+                    if (item.closest('#inventory-items')) {
+                        item.addEventListener('click', (e) => {
+                            const itemId = e.currentTarget.getAttribute('data-item');
+                            this.useBonusItem(itemId);
+                        });
+                    }
+                });
+                
+                // Анимация при наведении на крота
+                const mole = document.getElementById('mole');
+                mole.addEventListener('mouseenter', () => {
+                    mole.style.animation = 'none';
+                    setTimeout(() => {
+                        mole.style.animation = 'float 1s ease-in-out';
+                    }, 10);
+                });
+            }
+            
+            switchTab(tabName) {
+                // Обновляем активные вкладки
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // Активируем выбранную вкладку
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+                
+                // Загружаем данные для соответствующей вкладки
+                switch(tabName) {
+                    case 'leaderboard':
+                        this.loadLeaderboard();
+                        this.startAutoRefresh();
+                        break;
+                    case 'achievements':
+                        this.loadAchievements();
+                        break;
+                    case 'daily':
+                        this.loadDailyReward();
+                        break;
+                    case 'skins':
+                        this.loadSkins();
+                        break;
+                    case 'bonus':
+                        this.loadBonusItems();
+                        break;
+                    case 'events':
+                        this.loadEvents();
+                        break;
+                    default:
+                        this.stopAutoRefresh();
+                }
+            }
+            
+            startAutoRefresh() {
+                this.stopAutoRefresh(); // Очищаем предыдущий интервал
+                
+                this.refreshTimer = 30;
+                this.updateRefreshTimer();
+                
+                this.leaderboardInterval = setInterval(() => {
+                    this.refreshTimer--;
+                    this.updateRefreshTimer();
+                    
+                    if (this.refreshTimer <= 0) {
+                        this.loadLeaderboard();
+                        this.refreshTimer = 30;
+                    }
+                }, 1000);
+            }
+            
+            stopAutoRefresh() {
+                if (this.leaderboardInterval) {
+                    clearInterval(this.leaderboardInterval);
+                    this.leaderboardInterval = null;
+                }
+            }
+            
+            updateRefreshTimer() {
+                const timerElement = document.getElementById('refresh-timer');
+                if (timerElement) {
+                    timerElement.textContent = this.refreshTimer;
+                }
+            }
+            
+            showScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.classList.remove('active');
+                });
+                document.getElementById(screenId).classList.add('active');
+            }
+            
+            showMessage(elementId, message, isSuccess = true) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.textContent = message;
+                    element.className = `message ${isSuccess ? 'success' : 'error'}`;
+                    element.classList.remove('hidden');
+                    
+                    setTimeout(() => {
+                        element.classList.add('hidden');
+                    }, 3000);
+                }
+            }
+            
+            async register() {
+                const username = document.getElementById('register-username').value;
+                const password = document.getElementById('register-password').value;
+                
+                try {
+                    const response = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.token = data.token;
+                        this.user = data.user;
+                        localStorage.setItem('token', this.token);
+                        this.soundManager.play('login');
+                        this.showMessage('register-message', 'АККАУНТ СОЗДАН!', true);
+                        setTimeout(() => {
+                            this.showScreen('game-screen');
+                            this.updateUI();
+                        }, 1500);
+                    } else {
+                        this.showMessage('register-message', data.error, false);
+                    }
+                } catch (error) {
+                    this.showMessage('register-message', 'ОШИБКА СЕТИ', false);
+                }
+            }
+            
+            async login() {
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.token = data.token;
+                        this.user = data.user;
+                        localStorage.setItem('token', this.token);
+                        this.soundManager.play('login');
+                        this.loadUserData();
+                        this.showScreen('game-screen');
+                    } else {
+                        this.showMessage('login-message', data.error, false);
+                    }
+                } catch (error) {
+                    this.showMessage('login-message', 'ОШИБКА СЕТИ', false);
+                }
+            }
+            
+            async checkAuth() {
+                if (this.token) {
+                    try {
+                        const response = await fetch('/api/user', {
+                            headers: {
+                                'Authorization': `Bearer ${this.token}`
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.user = data.user;
+                            this.loadUserData();
+                            this.showScreen('game-screen');
+                        } else {
+                            this.showScreen('register-screen');
+                        }
+                    } catch (error) {
+                        this.showScreen('register-screen');
+                    }
+                } else {
+                    this.showScreen('register-screen');
+                }
+                
+                // Скрыть экран загрузки
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }, 1000);
+            }
+            
+            loadUserData() {
+                if (this.user) {
+                    this.coins = this.user.coins || 0;
+                    this.level = this.user.level || 1;
+                    this.clicks = this.user.clicks || 0;
+                    this.lastLevel = this.level;
+                    this.achievements = this.user.achievements || {};
+                    this.dailyStreak = this.user.dailyStreak || 0;
+                    this.lastDailyReward = this.user.lastDailyReward ? new Date(this.user.lastDailyReward) : null;
+                    this.skins = this.user.skins || ['default'];
+                    this.currentSkin = this.user.currentSkin || 'default';
+                    this.bonusItems = this.user.bonusItems || {};
+                    this.eventProgress = this.user.eventProgress || {};
+                    this.updateUI();
+                }
+            }
+            
+            async saveUserData() {
+                if (this.token) {
+                    // Отменить предыдущий таймер сохранения
+                    if (this.saveTimeout) {
+                        clearTimeout(this.saveTimeout);
+                    }
+                    
+                    // Сохранить через 1 секунду после последнего изменения
+                    this.saveTimeout = setTimeout(async () => {
+                        try {
+                            await fetch('/api/update-stats', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${this.token}`
+                                },
+                                body: JSON.stringify({
+                                    coins: this.coins,
+                                    level: this.level,
+                                    clicks: this.clicks,
+                                    achievements: this.achievements,
+                                    bonusItems: this.bonusItems,
+                                    eventProgress: this.eventProgress
+                                })
+                            });
+                        } catch (error) {
+                            console.error('Ошибка сохранения данных:', error);
+                        }
+                    }, 1000);
+                }
+            }
+            
+            updateUI() {
+                const coinsElement = document.getElementById('coins');
+                const levelElement = document.getElementById('level');
+                const clicksElement = document.getElementById('clicks');
+                
+                if (coinsElement) coinsElement.textContent = this.coins;
+                if (levelElement) levelElement.textContent = this.level;
+                if (clicksElement) clicksElement.textContent = this.clicks;
+                
+                // Анимация при повышении уровня
+                if (this.level > this.lastLevel) {
+                    if (levelElement) {
+                        levelElement.classList.add('level-up');
+                        this.soundManager.play('levelUp');
+                        setTimeout(() => {
+                            levelElement.classList.remove('level-up');
+                        }, 1000);
+                    }
+                    this.lastLevel = this.level;
+                }
+                
+                // Обновляем бонусные предметы
+                this.updateBonusItems();
+            }
+            
+            async loadLeaderboard() {
+                try {
+                    const response = await fetch('/api/leaderboard');
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.renderLeaderboard(data.leaderboard);
+                    } else {
+                        this.showError('leaderboard-list', 'Ошибка загрузки таблицы лидеров');
+                    }
+                } catch (error) {
+                    console.error('Ошибка сети:', error);
+                    this.showError('leaderboard-list', 'Нет подключения к серверу');
+                }
+            }
+            
+            renderLeaderboard(leaderboard) {
+                const leaderboardList = document.getElementById('leaderboard-list');
+                if (!leaderboardList) return;
+                
+                leaderboardList.innerHTML = '';
+                
+                if (!leaderboard || leaderboard.length === 0) {
+                    leaderboardList.innerHTML = '<div class="leaderboard-item"><div class="leaderboard-username">Нет игроков</div></div>';
+                    return;
+                }
+                
+                leaderboard.forEach((player) => {
+                    const playerElement = document.createElement('div');
+                    playerElement.className = 'leaderboard-item';
+                    
+                    // Определяем медали для первых мест
+                    let rankDisplay = player.rank;
+                    if (player.rank === 1) {
+                        rankDisplay = '🥇';
+                    } else if (player.rank === 2) {
+                        rankDisplay = '🥈';
+                    } else if (player.rank === 3) {
+                        rankDisplay = '🥉';
+                    }
+                    
+                    playerElement.innerHTML = `
+                        <div class="leaderboard-rank">${rankDisplay}</div>
+                        <div class="leaderboard-username">${this.escapeHtml(player.username)}</div>
+                        <div class="leaderboard-score">${this.formatNumber(player.coins)}</div>
+                    `;
+                    
+                    leaderboardList.appendChild(playerElement);
+                });
+            }
+            
+            async loadAchievements() {
+                const achievementsList = document.getElementById('achievements-list');
+                if (!achievementsList) return;
+                
+                achievementsList.innerHTML = '';
+                
+                // Список достижений
+                const achievements = [
+                    { id: 'first_click', name: 'Первый клик', desc: 'Сделайте первый клик', reward: 10, icon: '🖱️', condition: (user) => user.clicks >= 1 },
+                    { id: 'ten_clicks', name: 'Десяток кликов', desc: 'Сделайте 10 кликов', reward: 50, icon: '🖱️🖱️', condition: (user) => user.clicks >= 10 },
+                    { id: 'hundred_clicks', name: 'Сотня кликов', desc: 'Сделайте 100 кликов', reward: 200, icon: '🖱️🖱️🖱️', condition: (user) => user.clicks >= 100 },
+                    { id: 'first_level', name: 'Первый уровень', desc: 'Достигните 2 уровня', reward: 100, icon: '📈', condition: (user) => user.level >= 2 },
+                    { id: 'level_5', name: 'Пятый уровень', desc: 'Достигните 5 уровня', reward: 300, icon: '📈📈', condition: (user) => user.level >= 5 },
+                    { id: 'thousand_coins', name: 'Тысячный рубеж', desc: 'Наберите 1000 монет', reward: 500, icon: '💎', condition: (user) => user.coins >= 1000 },
+                    { id: 'daily_login', name: 'Ежедневник', desc: 'Получите награду 3 дня подряд', reward: 200, icon: '📅', condition: (user) => user.dailyStreak >= 3 },
+                    { id: 'skin_collector', name: 'Коллекционер', desc: 'Купите 3 скина', reward: 400, icon: '🎨', condition: (user) => user.skins.length >= 3 },
+                    { id: 'bonus_hunter', name: 'Охотник за бонусами', desc: 'Используйте 5 бонусов', reward: 300, icon: '🎁', condition: (user) => {
+                        const totalBonuses = Object.values(user.bonusItems || {}).reduce((sum, count) => sum + count, 0);
+                        return totalBonuses >= 5;
+                    }},
+                    { id: 'event_master', name: 'Мастер событий', desc: 'Выполните 2 события', reward: 600, icon: '🏆', condition: (user) => {
+                        const completedEvents = Object.values(user.eventProgress || {}).filter(progress => progress >= 100).length;
+                        return completedEvents >= 2;
+                    }},
+                    { id: 'click_master', name: 'Мастер кликов', desc: 'Сделайте 500 кликов', reward: 800, icon: '⚡', condition: (user) => user.clicks >= 500 },
+                    { id: 'level_10', name: 'Десятый уровень', desc: 'Достигните 10 уровня', reward: 1000, icon: '🚀', condition: (user) => user.level >= 10 }
+                ];
+                
+                achievements.forEach(achievement => {
+                    const isUnlocked = this.achievements[achievement.id] || achievement.condition(this);
+                    const isAlreadyClaimed = this.achievements[achievement.id];
+                    
+                    const achievementElement = document.createElement('div');
+                    achievementElement.className = `achievement-item ${isUnlocked ? '' : 'achievement-locked'}`;
+                    
+                    if (isUnlocked && !isAlreadyClaimed) {
+                        achievementElement.innerHTML = `
+                            <div class="achievement-icon ${isUnlocked ? '' : 'achievement-locked'}">
+                                ${achievement.icon}
+                            </div>
+                            <div class="achievement-info">
+                                <div class="achievement-name">${achievement.name}</div>
+                                <div class="achievement-desc">${achievement.desc}</div>
+                                <div class="achievement-reward">Награда: ${achievement.reward} монет</div>
+                            </div>
+                            <button class="achievement-claim-btn" data-achievement="${achievement.id}">ПОЛУЧИТЬ</button>
+                        `;
+                    } else if (isAlreadyClaimed) {
+                        achievementElement.innerHTML = `
+                            <div class="achievement-icon ${isUnlocked ? '' : 'achievement-locked'}">
+                                ${achievement.icon}
+                            </div>
+                            <div class="achievement-info">
+                                <div class="achievement-name">${achievement.name}</div>
+                                <div class="achievement-desc">${achievement.desc}</div>
+                                <div class="achievement-reward">Получено: ${achievement.reward} монет</div>
+                            </div>
+                            <button class="achievement-claim-btn achievement-claimed" disabled>ПОЛУЧЕНО</button>
+                        `;
+                    } else {
+                        achievementElement.innerHTML = `
+                            <div class="achievement-icon ${isUnlocked ? '' : 'achievement-locked'}">
+                                ${achievement.icon}
+                            </div>
+                            <div class="achievement-info">
+                                <div class="achievement-name">${achievement.name}</div>
+                                <div class="achievement-desc">${achievement.desc}</div>
+                                <div class="achievement-reward">Награда: ${achievement.reward} монет</div>
+                            </div>
+                        `;
+                    }
+                    
+                    achievementsList.appendChild(achievementElement);
+                });
+                
+                // Добавляем обработчики событий для кнопок получения достижений
+                document.querySelectorAll('.achievement-claim-btn[data-achievement]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const achievementId = e.target.getAttribute('data-achievement');
+                        const achievement = achievements.find(a => a.id === achievementId);
+                        if (achievement) {
+                            this.claimAchievement(achievement);
+                        }
+                    });
+                });
+            }
+            
+            async claimAchievement(achievement) {
+                if (this.achievements[achievement.id]) return;
+                
+                this.achievements[achievement.id] = true;
+                this.coins += achievement.reward;
+                this.updateUI();
+                this.saveUserData();
+                
+                this.soundManager.play('achievement');
+                this.showMessage('achievements-list', `Достижение получено! +${achievement.reward} монет`, true);
+                
+                // Перезагружаем список достижений
+                setTimeout(() => {
+                    this.loadAchievements();
+                }, 1000);
+            }
+            
+            async loadDailyReward() {
+                const streakElement = document.getElementById('streak-count');
+                const timerElement = document.getElementById('daily-timer');
+                const rewardButton = document.getElementById('claim-daily-reward');
+                
+                if (!streakElement || !timerElement || !rewardButton) return;
+                
+                if (streakElement) streakElement.textContent = this.dailyStreak;
+                
+                // Проверяем, можно ли получить награду
+                if (this.lastDailyReward) {
+                    const nextReward = new Date(this.lastDailyReward);
+                    nextReward.setHours(nextReward.getHours() + 24);
+                    const now = new Date();
+                    
+                    if (now < nextReward) {
+                        // Отсчет времени до следующей награды
+                        const timeDiff = nextReward - now;
+                        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                        
+                        if (timerElement) timerElement.textContent = `Следующая награда через ${hours}ч ${minutes}м`;
+                        if (rewardButton) rewardButton.disabled = true;
+                    } else {
+                        if (timerElement) timerElement.textContent = 'Награда доступна!';
+                        if (rewardButton) rewardButton.disabled = false;
+                    }
+                } else {
+                    if (timerElement) timerElement.textContent = 'Первая награда доступна!';
+                    if (rewardButton) rewardButton.disabled = false;
+                }
+            }
+            
+            initDailyTimer() {
+                setInterval(() => {
+                    if (document.getElementById('daily-tab') && 
+                        !document.getElementById('daily-tab').classList.contains('hidden')) {
+                        this.loadDailyReward();
+                    }
+                }, 60000); // Обновляем таймер каждую минуту
+            }
+            
+            async claimDailyReward() {
+                try {
+                    const response = await fetch('/api/daily-reward', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.token}`
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.coins = data.user.coins;
+                        this.dailyStreak = data.streak;
+                        this.lastDailyReward = new Date();
+                        this.updateUI();
+                        this.loadDailyReward();
+                        this.showMessage('daily-message', data.message, true);
+                        
+                        // Обновляем достижения
+                        this.loadAchievements();
+                    } else {
+                        this.showMessage('daily-message', data.error, false);
+                    }
+                } catch (error) {
+                    this.showMessage('daily-message', 'Ошибка сети', false);
+                }
+            }
+            
+            async loadSkins() {
+                const skinsList = document.getElementById('skins-list');
+                if (!skinsList) return;
+                
+                skinsList.innerHTML = '';
+                
+                // Список скинов
+                const skins = [
+                    { id: 'default', name: 'Обычный крот', price: 0 },
+                    { id: 'cyber', name: 'Кибер крот', price: 500 },
+                    { id: 'gold', name: 'Золотой крот', price: 1000 },
+                    { id: 'diamond', name: 'Алмазный крот', price: 2000 },
+                    { id: 'rainbow', name: 'Радужный крот', price: 5000 },
+                    { id: 'space', name: 'Космический крот', price: 3000 },
+                    { id: 'fire', name: 'Огненный крот', price: 4000 }
+                ];
+                
+                skins.forEach(skin => {
+                    const isOwned = this.skins.includes(skin.id);
+                    const isCurrent = this.currentSkin === skin.id;
+                    
+                    const skinElement = document.createElement('div');
+                    skinElement.className = `skin-item ${isCurrent ? 'skin-current' : ''}`;
+                    
+                    skinElement.innerHTML = `
+                        <div class="skin-info">
+                            <div class="skin-name">${skin.name}</div>
+                            ${isOwned ? 
+                                `<div class="skin-owned">Куплен</div>` : 
+                                `<div class="skin-price">${skin.price} монет</div>`
+                            }
+                        </div>
+                        ${isCurrent ? 
+                            `<button class="skin-equip-btn" disabled>НАДЕТО</button>` :
+                            isOwned ? 
+                                `<button class="skin-equip-btn" data-skin="${skin.id}">НАДЕТЬ</button>` :
+                                `<button class="skin-buy-btn" data-skin="${skin.id}" ${this.coins < skin.price ? 'disabled' : ''}>КУПИТЬ</button>`
+                        }
+                    `;
+                    
+                    skinsList.appendChild(skinElement);
+                });
+                
+                // Добавляем обработчики событий
+                document.querySelectorAll('.skin-equip-btn[data-skin]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const skinId = e.target.getAttribute('data-skin');
+                        this.changeSkin(skinId);
+                    });
+                });
+                
+                document.querySelectorAll('.skin-buy-btn[data-skin]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const skinId = e.target.getAttribute('data-skin');
+                        this.buySkin(skinId);
+                    });
+                });
+            }
+            
+            async buySkin(skinId) {
+                try {
+                    const response = await fetch('/api/buy-skin', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.token}`
+                        },
+                        body: JSON.stringify({ skinId })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.skins = data.user.skins;
+                        this.coins = data.user.coins;
+                        this.updateUI();
+                        this.loadSkins();
+                        this.showMessage('skins-list', 'Скин успешно куплен!', true);
+                    } else {
+                        this.showMessage('skins-list', data.error, false);
+                    }
+                } catch (error) {
+                    this.showMessage('skins-list', 'Ошибка сети', false);
+                }
+            }
+            
+            async changeSkin(skinId) {
+                try {
+                    const response = await fetch('/api/change-skin', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.token}`
+                        },
+                        body: JSON.stringify({ skinId })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.currentSkin = data.user.currentSkin;
+                        this.loadSkins();
+                        this.showMessage('skins-list', 'Скин успешно изменен!', true);
+                    } else {
+                        this.showMessage('skins-list', data.error, false);
+                    }
+                } catch (error) {
+                    this.showMessage('skins-list', 'Ошибка сети', false);
+                }
+            }
+            
+            async loadBonusItems() {
+                try {
+                    const response = await fetch('/api/bonus-items', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.token}`
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.bonusItems = data.bonusItems;
+                        this.updateBonusItems();
+                    }
+                } catch (error) {
+                    console.error('Ошибка загрузки бонусных предметов:', error);
+                }
+            }
+            
+            updateBonusItems() {
+                const bonusItems = ['double_points', 'auto_click', 'coin_boost', 'lucky_drop'];
+                
+                bonusItems.forEach(itemId => {
+                    const count = this.bonusItems[itemId] || 0;
+                    const countElement = document.getElementById(`${itemId}-count`);
+                    if (countElement) {
+                        countElement.textContent = count;
+                    }
+                });
+            }
+            
+            async buyBonusItem(itemId) {
+                try {
+                    const response = await fetch('/api/buy-bonus', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.token}`
+                        },
+                        body: JSON.stringify({ itemId })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.bonusItems = data.user.bonusItems;
+                        this.coins = data.user.coins;
+                        this.updateUI();
+                        this.updateBonusItems();
+                        this.showMessage('bonus-message', 'Предмет успешно куплен!', true);
+                    } else {
+                        this.showMessage('bonus-message', data.error, false);
+                    }
+                } catch (error) {
+                    this.showMessage('bonus-message', 'Ошибка сети', false);
+                }
+            }
+            
+            async useBonusItem(itemId) {
+                if (!this.bonusItems[itemId] || this.bonusItems[itemId] <= 0) {
+                    this.showMessage('bonus-message', 'Предмет не найден', false);
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/use-bonus', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.token}`
+                        },
+                        body: JSON.stringify({ itemId })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.bonusItems = data.user.bonusItems;
+                        this.updateBonusItems();
+                        
+                        // Применяем эффект
+                        if (data.effect) {
+                            if (data.effect.doublePoints) {
+                                this.doublePointsActive = true;
+                                this.doublePointsTime = data.effect.doublePointsTime;
+                                this.showMessage('bonus-message', data.message, true);
+                                this.startDoublePointsTimer();
+                            } else if (data.effect.autoClicks) {
+                                // Автоклики
+                                for (let i = 0; i < data.effect.autoClicks; i++) {
+                                    setTimeout(() => {
+                                        this.simulateClick();
+                                    }, i * 100);
+                                }
+                                this.showMessage('bonus-message', data.message, true);
+                            } else if (data.effect.coinBoost) {
+                                this.coins += data.effect.coinBoost;
+                                this.updateUI();
+                                this.showMessage('bonus-message', data.message, true);
+                            }
+                        }
+                    } else {
+                        this.showMessage('bonus-message', data.error, false);
+                    }
+                } catch (error) {
+                    this.showMessage('bonus-message', 'Ошибка сети', false);
+                }
+            }
+            
+            startDoublePointsTimer() {
+                const timer = setInterval(() => {
+                    this.doublePointsTime--;
+                    if (this.doublePointsTime <= 0) {
+                        this.doublePointsActive = false;
+                        clearInterval(timer);
+                        this.showMessage('bonus-message', 'Удвоение монет закончилось', true);
+                    }
+                }, 1000);
+            }
+            
+            async loadEvents() {
+                const eventsList = document.getElementById('events-list');
+                if (!eventsList) return;
+                
+                eventsList.innerHTML = '';
+                
+                // Генерируем ежедневные события
+                const events = [
+                    { 
+                        id: 'click_challenge', 
+                        title: 'Клик-челлендж', 
+                        desc: 'Сделайте 25 кликов', 
+                        target: 25,
+                        reward: '200 монет + 1 бонусный предмет',
+                        type: 'clicks'
+                    },
+                    { 
+                        id: 'level_up', 
+                        title: 'Повышение уровня', 
+                        desc: 'Достигните уровня 3', 
+                        target: 3,
+                        reward: '300 монет',
+                        type: 'level'
+                    },
+                    { 
+                        id: 'coin_sprint', 
+                        title: 'Спринт монет', 
+                        desc: 'Наберите 500 монет', 
+                        target: 500,
+                        reward: '400 монет + 2 бонусных предмета',
+                        type: 'coins'
+                    },
+                    { 
+                        id: 'daily_login', 
+                        title: 'Ежедневный вход', 
+                        desc: 'Войдите в игру сегодня', 
+                        target: 1,
+                        reward: '100 монет',
+                        type: 'login'
+                    },
+                    { 
+                        id: 'combo_click', 
+                        title: 'Комбо-клик', 
+                        desc: 'Сделайте 5 кликов подряд за 5 секунд', 
+                        target: 5,
+                        reward: '500 монет',
+                        type: 'combo'
+                    },
+                    { 
+                        id: 'skin_challenge', 
+                        title: 'Коллекция скинов', 
+                        desc: 'Купите 2 новых скина', 
+                        target: 2,
+                        reward: '600 монет + 1 редкий предмет',
+                        type: 'skins'
+                    },
+                    { 
+                        id: 'achievement_hunter', 
+                        title: 'Охотник за достижениями', 
+                        desc: 'Получите 3 достижения', 
+                        target: 3,
+                        reward: '800 монет + 3 бонусных предмета',
+                        type: 'achievements'
+                    }
+                ];
+                
+                events.forEach(event => {
+                    // Получаем текущий прогресс
+                    let progress = 0;
+                    switch(event.type) {
+                        case 'clicks':
+                            progress = Math.min(100, (this.clicks / event.target) * 100);
+                            break;
+                        case 'level':
+                            progress = Math.min(100, (this.level / event.target) * 100);
+                            break;
+                        case 'coins':
+                            progress = Math.min(100, (this.coins / event.target) * 100);
+                            break;
+                        case 'login':
+                            progress = 100; // Всегда выполнено если вошел
+                            break;
+                        case 'skins':
+                            progress = Math.min(100, ((this.skins.length - 1) / event.target) * 100);
+                            break;
+                        case 'achievements':
+                            const completedAchievements = Object.values(this.achievements).filter(Boolean).length;
+                            progress = Math.min(100, (completedAchievements / event.target) * 100);
+                            break;
+                        default:
+                            progress = 0;
+                    }
+                    
+                    const eventElement = document.createElement('div');
+                    eventElement.className = 'event-item';
+                    
+                    eventElement.innerHTML = `
+                        <div class="event-title">${event.title}</div>
+                        <div class="event-desc">${event.desc}</div>
+                        <div class="event-progress">
+                            <div class="event-progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="event-info">
+                            <span>${Math.round(progress)}%</span>
+                        </div>
+                        <div class="event-reward">Награда: ${event.reward}</div>
+                    `;
+                    
+                    eventsList.appendChild(eventElement);
+                });
+            }
+            
+            simulateClick() {
+                this.clicks++;
+                const coins = this.doublePointsActive ? this.level * 2 : this.level;
+                this.coins += coins;
+                this.updateUI();
+                this.saveUserData();
+                
+                // Анимация
+                const mole = document.getElementById('mole');
+                if (mole) {
+                    mole.style.transform = 'scale(0.92)';
+                    setTimeout(() => {
+                        mole.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            }
+            
+            showError(containerId, message) {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = `<div class="message error" style="margin: 20px;">${message}</div>`;
+                }
+            }
+            
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            formatNumber(num) {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            }
+            
+            tap(e) {
+                this.clicks++;
+                const coins = this.doublePointsActive ? this.level * 2 : this.level;
+                this.coins += coins;
+                
+                // Уровень повышается каждые 10 ударов
+                const newLevel = Math.floor(this.clicks / 10) + 1;
+                if (newLevel > this.level) {
+                    this.level = newLevel;
+                }
+                
+                this.updateUI();
+                this.saveUserData();
+                this.soundManager.play('tap');
+                
+                // Проверяем достижения
+                this.checkAchievements();
+                
+                // Анимация
+                const mole = document.getElementById('mole');
+                if (mole) {
+                    mole.style.transform = 'scale(0.92)';
+                    setTimeout(() => {
+                        mole.style.transform = 'scale(1)';
+                    }, 100);
+                }
+                
+                // Эффект волны
+                if (e) {
+                    const moleWrapper = document.querySelector('.mole-wrapper');
+                    if (moleWrapper) {
+                        const rect = mole.getBoundingClientRect();
+                        const wrapperRect = moleWrapper.getBoundingClientRect();
+                        
+                        const x = e.clientX - wrapperRect.left;
+                        const y = e.clientY - wrapperRect.top;
+                        
+                        const effect = document.createElement('div');
+                        effect.className = 'tap-effect';
+                        effect.style.left = x + 'px';
+                        effect.style.top = y + 'px';
+                        moleWrapper.appendChild(effect);
+                        
+                        setTimeout(() => {
+                            effect.remove();
+                        }, 600);
+                    }
+                }
+            }
+            
+            checkAchievements() {
+                // Здесь можно добавить проверку достижений в реальном времени
+                if (document.getElementById('achievements-tab') && 
+                    !document.getElementById('achievements-tab').classList.contains('hidden')) {
+                    this.loadAchievements();
+                }
+            }
+            
+            logout() {
+                this.soundManager.play('logout');
+                this.token = null;
+                this.user = null;
+                localStorage.removeItem('token');
+                this.stopAutoRefresh();
+                this.showScreen('login-screen');
+            }
+        }
+
+        // Запуск игры при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            window.game = new Game();
+        });
+        
+        // Предотвращение контекстного меню на мобильных устройствах
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
