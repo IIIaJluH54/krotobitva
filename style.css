@@ -149,3 +149,12 @@ body {
     height: 280px;
   }
 }
+.message {
+  /* ... остальное без изменений ... */
+  font-weight: bold;
+  transition: opacity 0.2s;
+}
+
+.message.visible {
+  opacity: 1;
+}
