@@ -1,4 +1,4 @@
-// === Крото Битва — Полная версия с работающим "Купить Авто-крот" ===
+// === Крото Битва — Полная версия с корректными ценами и работающими кнопками ===
 
 let player = {
   coins: 0,
@@ -191,11 +191,11 @@ function onHit(e) {
   player.coins += player.damage;
   player.level = Math.floor(Math.log2(player.coins + 1)) + 1;
 
-  // ✅ Эффект: показываем +урон
+  // Эффект
   const click = document.createElement('div');
   click.className = 'click-effect';
   const rect = krot.getBoundingClientRect();
-  click.textContent = `+${player.damage}`;  // ✅ Заменили "-" на "+"
+  click.textContent = `+${player.damage}`;
   click.style.left = `${rect.left + rect.width / 2 - 30}px`;
   click.style.top = `${rect.top + rect.height / 2 - 30}px`;
   document.body.appendChild(click);
