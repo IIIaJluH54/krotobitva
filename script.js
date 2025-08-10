@@ -1,7 +1,7 @@
-// === Крото Битва — 100% РАБОЧАЯ ВЕРСИЯ ===
+// === Крото Битва — Полная версия с монетами ===
 
 let player = {
-  carrots: 0,
+  coins: 0,           // Заменили carrots → coins
   damage: 1,
   autoClick: false,
   autoClickLevel: 0,
@@ -18,7 +18,7 @@ function loadGame() {
     try {
       Object.assign(player, JSON.parse(saved));
     } catch (e) {
-      console.warn("Ошибка парсинга данных");
+      console.warn("Ошибка загрузки данных");
     }
   }
   updateUI();
@@ -31,7 +31,7 @@ function saveGame() {
 
 // Обновление UI
 function updateUI() {
-  $('carrots').textContent = Math.floor(player.carrots);
+  $('coins').textContent = Math.floor(player.coins);  // Теперь coins
   $('damage').textContent = player.damage;
   $('level').textContent = player.level;
 
@@ -40,8 +40,8 @@ function updateUI() {
   $('auto-cost').textContent = getAutoCost();
 
   // Кнопки
-  $('btn-damage').disabled = player.carrots < getDamageCost();
-  $('btn-auto').disabled = player.carrots < getAutoCost();
+  $('btn-damage').disabled = player.coins < getDamageCost();
+  $('btn-auto').disabled = player.coins < getAutoCost();
 }
 
 function getDamageCost() {
@@ -52,33 +52,33 @@ function getAutoCost() {
   return 50 + player.upgrades.auto * 100;
 }
 
-// Звуки — разрешаем только после первого касания
+// Разрешение звуков после первого касания
 let soundsEnabled = false;
 
 function enableSounds() {
   if (soundsEnabled) return;
   soundsEnabled = true;
-  // Предзагрузка звуков
+  // Предзагрузка
   new Audio('assets/click.mp3').play().then(a => a.pause()).catch(() => {});
 }
 
-// Клик
+// Клик по кроту
 const krot = $('krot');
 
-krot.addEventListener('touchstart', onTouch, { passive: false });
-krot.addEventListener('click', onTouch);
+krot.addEventListener('touchstart', onHit, { passive: false });
+krot.addEventListener('click', onHit);
 
-function onTouch(e) {
-  // Разрешаем звуки и вибрацию после первого касания
+function onHit(e) {
+  // Разрешаем звуки и вибрацию
   if (!soundsEnabled) {
     enableSounds();
   }
 
-  // Клик
-  player.carrots += player.damage;
-  player.level = Math.floor(Math.log2(player.carrots + 1)) + 1;
+  // Увеличиваем монеты
+  player.coins += player.damage;
+  player.level = Math.floor(Math.log2(player.coins + 1)) + 1;
 
-  // Эффект
+  // Эффект клика
   const click = document.createElement('div');
   click.className = 'click-effect';
   const rect = krot.getBoundingClientRect();
@@ -95,11 +95,12 @@ function onTouch(e) {
     sound.play().catch(() => {});
   } catch (err) {}
 
-  // Вибрация (работает после первого касания)
+  // Вибрация
   if (navigator.vibrate) {
     navigator.vibrate(10);
   }
 
+  // Обновляем интерфейс
   updateUI();
   saveGame();
 }
@@ -107,8 +108,8 @@ function onTouch(e) {
 // Улучшения
 $('btn-damage').addEventListener('click', () => {
   const cost = getDamageCost();
-  if (player.carrots >= cost) {
-    player.carrots -= cost;
+  if (player.coins >= cost) {
+    player.coins -= cost;
     player.damage += 1;
     player.upgrades.damage++;
     playUpgradeSound();
@@ -120,8 +121,8 @@ $('btn-damage').addEventListener('click', () => {
 
 $('btn-auto').addEventListener('click', () => {
   const cost = getAutoCost();
-  if (player.carrots >= cost) {
-    player.carrots -= cost;
+  if (player.coins >= cost) {
+    player.coins -= cost;
     player.autoClickLevel++;
     player.upgrades.auto++;
 
@@ -145,18 +146,19 @@ function playUpgradeSound() {
   } catch (err) {}
 }
 
-// Автоклик — работает
+// Автоклик
 function startAutoClick() {
   setInterval(() => {
     if (player.autoClick) {
-      player.carrots += player.damage;
-      player.level = Math.floor(Math.log2(player.carrots + 1)) + 1;
+      player.coins += player.damage;
+      player.level = Math.floor(Math.log2(player.coins + 1)) + 1;
       updateUI();
       saveGame();
     }
   }, 1000);
 }
 
+// Показ сообщения
 function showMsg(text) {
   const msg = $('message');
   msg.textContent = text;
