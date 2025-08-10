@@ -1,4 +1,4 @@
-// === Крото Битва — Полная версия ===
+// === Крото Битва — Полная исправленная версия ===
 
 let player = {
   carrots: 0,
@@ -14,7 +14,13 @@ const $ = id => document.getElementById(id);
 // Загрузка прогресса
 function loadGame() {
   const saved = localStorage.getItem('krotobitva');
-  if (saved) Object.assign(player, JSON.parse(saved));
+  if (saved) {
+    try {
+      Object.assign(player, JSON.parse(saved));
+    } catch (e) {
+      console.warn("Ошибка загрузки данных");
+    }
+  }
   updateUI();
 }
 
@@ -75,15 +81,13 @@ $('krot').addEventListener('click', (e) => {
   // Вибрация
   if ('vibrate' in navigator && navigator.vibrate) {
     navigator.vibrate(10);
-  } else if ('mozVibrate' in navigator) {
-    navigator.mozVibrate(10);
   }
 
   updateUI();
   saveGame();
 });
 
-// Улучшения
+// Улучшение урона
 $('btn-damage').addEventListener('click', () => {
   const cost = getDamageCost();
   if (player.carrots >= cost) {
@@ -97,16 +101,20 @@ $('btn-damage').addEventListener('click', () => {
   }
 });
 
+// Автоклик
 $('btn-auto').addEventListener('click', () => {
   const cost = getAutoCost();
   if (player.carrots >= cost) {
     player.carrots -= cost;
     player.autoClickLevel++;
     player.upgrades.auto++;
+
+    // Запуск авто-клика при первом нажатии
     if (!player.autoClick) {
       player.autoClick = true;
       startAutoClick();
     }
+
     playUpgradeSound();
     showMsg(`Авто-крот запущен! 🤖`);
     updateUI();
@@ -121,29 +129,9 @@ function playUpgradeSound() {
   } catch (err) {}
 }
 
+// ✅ Авто-клик работает
 function startAutoClick() {
   setInterval(() => {
     if (player.autoClick) {
       player.carrots += player.damage;
-      player.level = Math.floor(Math.log2(player.carrots + 1)) + 1;
-      updateUI();
-      saveGame();
-    }
-  }, 1000);
-}
-
-function showMsg(text) {
-  const msg = $('message');
-  msg.textContent = text;
-  msg.classList.add('visible');
-  setTimeout(() => msg.classList.remove('visible'), 1500);
-}
-
-// Telegram
-if (Telegram.WebApp) {
-  Telegram.WebApp.expand();
-  Telegram.WebApp.ready();
-}
-
-// Загрузка
-document.addEventListener('DOMContentLoaded', loadGame);
+      player.level
