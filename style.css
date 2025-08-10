@@ -93,3 +93,59 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .dust-puff { position: absolute; width: 34px; height: 18px; background: #2f1f14; border-radius: 50%; opacity: 0.95; filter: blur(1.6px); transform-origin: center; animation: dust-rise 1000ms ease forwards; }
 @keyframes dust-rise { 0% { transform: translateY(0) scale(0.6); opacity: 0.95; } 50% { transform: translateY(-18px) scale(1.1); opacity: 0.6 } 100% { transform: translateY(-64px) scale(1.8); opacity: 0; } }
 .particle { width: 12px; height: 12px; background: rgba(255,215,102,0.28); opacity: 0.95; filter: blur(0.9px); }
+
+
+/* --- Dark Theme & Minimalist UI --- */
+body {
+    background-color: #121212;
+    color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+button {
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #333;
+}
+
+.progress-bar {
+    background-color: #333;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #ff9800, #ffc107);
+    height: 100%;
+}
+
+.game-container {
+    background-color: rgba(30,30,30,0.85);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+/* Animated background */
+@keyframes bgMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 100% 100%; }
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 70%), 
+                linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.02) 75%);
+    background-size: 200% 200%;
+    animation: bgMove 15s linear infinite;
+    z-index: -1;
+}
