@@ -263,14 +263,24 @@ function onHit(e) {
   if (now - lastClickTs < 30) return;
   lastClickTs = now;
 
+  // visual: hit
+  try{ triggerHitAnimation(enemy.isBoss); }catch(e){}
+
   enemy.hp -= player.damage;
   if (enemy.hp <= 0) {
+    // visual: death
+    try{ playDeathAnimation(enemy.isBoss); }catch(e){}
+    try{ spawnCoinsEffect(enemy.maxHP/30); }catch(e){}
+    try{ animateCoinJump(); }catch(e){}
+    if (enemy.isBoss) try{ shakeScreen(); }catch(e){}
+
     // reward
     let reward = enemy.maxHP;
     if (enemy.isBoss) reward *= 3;
     player.coins += reward;
     player.kills = (player.kills || 0) + 1;
     player.level++;
+    levelFlash();
     spawnEnemy();
     // check tasks for level and kills/coins
     checkTasksAfterAction(reward, true);
@@ -332,6 +342,7 @@ function checkTasksAfterAction(rewardGained=0, leveled=false) {
     saveTasks();
     saveGameImmediate();
     renderTasks();
+    updateToggleHighlight();
     // if all done, show special message
     if (tasks.every(x => x.done)) {
       showNotification('Все задания на сегодня выполнены!', 1800);
@@ -408,3 +419,110 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 window.addEventListener('beforeunload', () => { if (saveTimeout) { clearTimeout(saveTimeout); saveGameImmediate(); } else { saveGameImmediate(); } });
+
+
+
+/* --- Visual and animation helpers --- */
+
+function triggerHitAnimation(isBoss) {
+  const krotEl = $('krot');
+  if (!krotEl) return;
+  // add flash overlay
+  let flash = krotEl.querySelector('.krot-flash');
+  if (!flash) { flash = document.createElement('div'); flash.className='krot-flash'; krotEl.style.position='relative'; krotEl.appendChild(flash); }
+  flash.style.opacity = '1';
+  setTimeout(()=> flash.style.opacity='0', 120);
+
+  // small lift
+  krotEl.classList.add('krot-hit');
+  setTimeout(()=> krotEl.classList.remove('krot-hit'), 140);
+}
+
+function playDeathAnimation(isBoss) {
+  const krotEl = $('krot');
+  if (!krotEl) return;
+  // create dust puffs
+  const rect = krotEl.getBoundingClientRect();
+  const count = isBoss ? 6 : 3;
+  for (let i=0;i<count;i++) {
+    const puff = document.createElement('div');
+    puff.className='dust-puff';
+    puff.style.left = (rect.left + (i%2===0? -10 : rect.width+10) + Math.random()*20)+'px';
+    puff.style.top = (rect.top + rect.height - 16 + Math.random()*6)+'px';
+    document.body.appendChild(puff);
+    setTimeout(()=> puff.remove(), 900);
+  }
+  // death transform on image
+  const img = krotEl.querySelector('img');
+  if (img) {
+    img.classList.add('krot-death');
+    setTimeout(()=> { img.classList.remove('krot-death'); }, 700);
+  }
+}
+
+function spawnCoinsEffect(amount) {
+  amount = Math.min(8, Math.max(3, Math.floor(amount)));
+  const rect = $('krot').getBoundingClientRect();
+  for (let i=0;i<amount;i++) {
+    const coin = document.createElement('div');
+    coin.className = 'coin-particle';
+    coin.textContent = '🪙';
+    const x = rect.left + rect.width/2 + (Math.random()*80-40);
+    const y = rect.top + rect.height/2 + (Math.random()*20-10);
+    coin.style.left = x + 'px';
+    coin.style.top = y + 'px';
+    document.body.appendChild(coin);
+    setTimeout(()=> coin.classList.add('fly'), 20);
+    setTimeout(()=> coin.remove(), 900);
+  }
+}
+
+function animateCoinJump() {
+  const coinsEl = $('coins');
+  if (!coinsEl) return;
+  coinsEl.classList.add('jump');
+  setTimeout(()=> coinsEl.classList.remove('jump'), 300);
+}
+
+function shakeScreen() {
+  const container = document.querySelector('.game-container');
+  if (!container) return;
+  container.classList.add('shake');
+  setTimeout(()=> container.classList.remove('shake'), 500);
+}
+
+function levelFlash() {
+  const lvl = $('level');
+  if (!lvl) return;
+  lvl.classList.add('level-flash');
+  setTimeout(()=> lvl.classList.remove('level-flash'), 700);
+}
+
+function initParticles() {
+  const wrap = $('particles');
+  if (!wrap) return;
+  wrap.innerHTML='';
+  const count = 22;
+  const w = window.innerWidth, h = window.innerHeight;
+  for (let i=0;i<count;i++) {
+    const p = document.createElement('div');
+    p.className='particle';
+    p.style.left = Math.random()*w + 'px';
+    p.style.top = Math.random()*h + 'px';
+    const dur = 8000 + Math.random()*6000;
+    p.style.animationDuration = dur+'ms';
+    p.style.opacity = 0.2 + Math.random()*0.6;
+    p.style.transform = `translateY(0) scale(${0.6+Math.random()*0.6})`;
+    wrap.appendChild(p);
+  }
+}
+
+function updateToggleHighlight() {
+  const toggle = $('toggle-tasks');
+  if (!toggle) return;
+  const hasIncomplete = tasks.some(t => !t.done);
+  if (hasIncomplete) toggle.classList.add('highlight'); else toggle.classList.remove('highlight');
+}
+
+
+document.addEventListener('DOMContentLoaded', function(){ initParticles(); updateToggleHighlight(); });

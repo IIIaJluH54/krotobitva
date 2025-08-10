@@ -39,3 +39,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .click-effect{position:fixed;pointer-events:none;color:#ffd966;font-weight:bold;font-size:1.3rem;z-index:1000;animation:float-up 1s ease-out forwards}
 @keyframes float-up{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
 @media(min-width:768px){.krot-click{width:320px;height:320px}}
+
+/* --- Extra animations & effects --- */
+
+/* --- Enemy hit animation --- */
+.krot-hit { transform: translateY(-6px) scale(0.98); transition: transform 120ms ease; }
+.krot-flash { position: absolute; inset: 0; background: rgba(255,0,0,0.15); pointer-events: none; mix-blend-mode: screen; opacity: 0; transition: opacity 120ms ease; border-radius: 50%; }
+/* death animation */
+.krot-death { transition: transform 700ms ease, opacity 700ms ease; transform: translateY(30px) scale(0.9); opacity: 0; }
+/* dust */
+.dust-puff { position: absolute; width: 18px; height: 10px; background: #3b2a1f; border-radius: 50%; opacity: 0.9; filter: blur(1px); transform-origin: center; animation: dust-rise 700ms ease forwards; }
+@keyframes dust-rise { 0% { transform: translateY(0) scale(0.6); opacity: 0.9; } 100% { transform: translateY(-24px) scale(1.3); opacity: 0; } }
+
+/* coin particles */
+.coin-particle { position: fixed; font-size: 18px; opacity: 1; transform: translateY(0) scale(1); transition: transform 700ms cubic-bezier(.2,.8,.2,1), opacity 700ms; pointer-events:none; z-index:1500; }
+.coin-particle.fly { transform: translateY(-120px) translateX(40px) scale(0.6); opacity: 0; }
+
+/* progress pulse on completion */
+.task-progress.pulse { box-shadow: 0 0 10px rgba(46,204,113,0.6); transform: scaleX(1.02); transition: transform 300ms ease; }
+
+
+/* coin jump */
+.coin-jump { display:inline-block; transform-origin:center; transition: transform 300ms ease; }
+.coin-jump.jump { transform: translateY(-8px) scale(1.08); }
+
+/* screen shake */
+@keyframes screen-shake { 0% { transform: translateX(0) } 20% { transform: translateX(-6px) } 40% { transform: translateX(6px) } 60% { transform: translateX(-4px) } 80% { transform: translateX(4px) } 100% { transform: translateX(0) } }
+.shake { animation: screen-shake 500ms linear; }
+
+/* level flash */
+.level-flash { position: relative; }
+.level-flash::after { content: ''; position: absolute; inset: -6px; border-radius: 8px; background: radial-gradient(circle, rgba(255,215,102,0.15), transparent 40%); opacity:0; animation: level-pop 700ms ease forwards; pointer-events:none; }
+@keyframes level-pop { 0% { opacity:1; transform: scale(0.9);} 100% { opacity:0; transform: scale(1.08);} }
+
+/* toggle highlight when tasks incomplete */
+.task-toggle.highlight { box-shadow: 0 6px 18px rgba(255,215,102,0.12); background: rgba(255,215,102,0.03); border-radius:8px; }
+
+/* particles background */
+#particles { position:fixed; inset:0; pointer-events:none; z-index:0; }
+.particle { position: absolute; width:6px; height:6px; border-radius:50%; background: rgba(255,215,102,0.12); filter: blur(0.6px); opacity:0.9; animation: particle-float linear infinite; }
+@keyframes particle-float { 0% { transform: translateY(0) scale(0.6); opacity:0.7 } 50% { transform: translateY(-40px) scale(1); opacity:1 } 100% { transform: translateY(-80px) scale(0.8); opacity:0 } }
+
+/* notification animation */
+.notification.show { animation: notif-in 400ms ease forwards; }
+@keyframes notif-in { 0% { transform: translateY(-8px) scale(0.98); opacity:0 } 100% { transform: translateY(0) scale(1); opacity:1 } }
