@@ -1,4 +1,4 @@
-// === Крото Битва — Полностью исправленная версия ===
+// === Крото Битва — Полная версия ===
 
 let player = {
   carrots: 0,
@@ -11,25 +11,29 @@ let player = {
 
 const $ = id => document.getElementById(id);
 
+// Загрузка прогресса
 function loadGame() {
   const saved = localStorage.getItem('krotobitva');
   if (saved) Object.assign(player, JSON.parse(saved));
   updateUI();
 }
 
+// Сохранение
 function saveGame() {
   localStorage.setItem('krotobitva', JSON.stringify(player));
 }
 
+// Обновление интерфейса
 function updateUI() {
   $('carrots').textContent = Math.floor(player.carrots);
   $('damage').textContent = player.damage;
   $('level').textContent = player.level;
 
-  // Обновляем цены улучшений
+  // Обновляем цены
   $('damage-cost').textContent = getDamageCost();
   $('auto-cost').textContent = getAutoCost();
 
+  // Проверка доступности
   $('btn-damage').disabled = player.carrots < getDamageCost();
   $('btn-auto').disabled = player.carrots < getAutoCost();
 }
@@ -53,7 +57,7 @@ $('krot').addEventListener('click', (e) => {
   player.carrots += player.damage;
   player.level = Math.floor(Math.log2(player.carrots + 1)) + 1;
 
-  // Эффект клика
+  // Эффект
   const click = document.createElement('div');
   click.className = 'click-effect';
   click.textContent = `-${player.damage}`;
@@ -68,11 +72,11 @@ $('krot').addEventListener('click', (e) => {
     soundClick.play().catch(() => {});
   } catch (err) {}
 
-  // Вибрация (на поддерживаемых устройствах)
+  // Вибрация
   if ('vibrate' in navigator && navigator.vibrate) {
-    navigator.vibrate([50, 50, 50]);
-  } else if ('mozVibrate' in navigator && navigator.mozVibrate) {
-    navigator.mozVibrate(50);
+    navigator.vibrate(10);
+  } else if ('mozVibrate' in navigator) {
+    navigator.mozVibrate(10);
   }
 
   updateUI();
@@ -135,8 +139,8 @@ function showMsg(text) {
   setTimeout(() => msg.classList.remove('visible'), 1500);
 }
 
-// Telegram: раскрыть на весь экран
-if (window.Telegram?.WebApp) {
+// Telegram
+if (Telegram.WebApp) {
   Telegram.WebApp.expand();
   Telegram.WebApp.ready();
 }
