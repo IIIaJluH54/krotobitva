@@ -1,16 +1,17 @@
-// === Крото Битва — Продвинутая система улучшений ===
+// === Крото Битва — Полная версия с работающим "Купить Авто-крот" ===
 
 let player = {
   coins: 0,
   damage: 1,
-  autoClick: false,           // true после покупки автокрота
-  autoClickDamage: 1,         // урон от автоклика
-  autoClickInterval: 1000,    // интервал в мс (меньше = чаще)
+  autoClick: false,
+  autoClickDamage: 1,
+  autoClickInterval: 1000,
   level: 1,
   upgrades: {
-    autoPurchased: false,     // куплен автокрот
-    autoDamage: 0,            // уровень урона автоклика
-    autoSpeed: 0              // уровень скорости
+    autoPurchased: false,
+    autoDamage: 0,
+    autoSpeed: 0,
+    damage: 0
   },
   lastUpdate: Date.now()
 };
@@ -31,7 +32,6 @@ function loadGame() {
   }
   updateUI();
 
-  // Запускаем автоклик, если куплен
   if (player.autoClick) {
     startAutoClick();
   }
@@ -43,67 +43,116 @@ function saveGame() {
   localStorage.setItem('krotobitva', JSON.stringify(player));
 }
 
-// Обновление интерфейса
+// Обновление UI
 function updateUI() {
   $('coins').textContent = Math.floor(player.coins);
   $('damage').textContent = player.damage;
   $('level').textContent = player.level;
 
-  // Показываем/скрываем улучшения
-  $('upgrade-auto').style.display = player.autoClick ? 'block' : 'none';
-  $('btn-auto-purchase').style.display = player.autoClick ? 'none' : 'block';
+  // Показываем/скрываем блоки
+  const upgradeAuto = $('upgrade-auto');
+  const btnAutoPurchase = $('btn-auto-purchase');
+
+  if (upgradeAuto && btnAutoPurchase) {
+    upgradeAuto.style.display = player.autoClick ? 'block' : 'none';
+    btnAutoPurchase.style.display = player.autoClick ? 'none' : 'block';
+  }
 
   // Цены
-  $('auto-damage-cost').textContent = getAutoDamageCost();
-  $('auto-speed-cost').textContent = getAutoSpeedCost();
+  const autoDamageCost = $('auto-damage-cost');
+  const autoSpeedCost = $('auto-speed-cost');
+  const damageCost = $('damage-cost');
+
+  if (autoDamageCost) autoDamageCost.textContent = getAutoDamageCost();
+  if (autoSpeedCost) autoSpeedCost.textContent = getAutoSpeedCost();
+  if (damageCost) damageCost.textContent = getDamageCost();
 
   // Кнопки
-  $('btn-auto-damage').disabled = player.coins < getAutoDamageCost();
-  $('btn-auto-speed').disabled = player.coins < getAutoSpeedCost();
+  const btnAutoDamage = $('btn-auto-damage');
+  const btnAutoSpeed = $('btn-auto-speed');
+  const btnDamage = $('btn-damage');
+
+  if (btnAutoDamage) btnAutoDamage.disabled = player.coins < getAutoDamageCost();
+  if (btnAutoSpeed) btnAutoSpeed.disabled = player.coins < getAutoSpeedCost();
+  if (btnDamage) btnDamage.disabled = player.coins < getDamageCost();
 }
 
 // === УЛУЧШЕНИЯ ===
 
-// Покупка автокрота (только 1 раз)
-$('btn-auto-purchase').addEventListener('click', () => {
-  if (player.coins >= 50 && !player.autoClick) {
-    player.coins -= 50;
-    player.autoClick = true;
-    player.upgrades.autoPurchased = true;
-    startAutoClick();
-    showMsg('Авто-крот активирован! 🤖');
-    updateUI();
-    saveGame();
-  }
-});
+// Покупка автокрота (1 раз)
+const btnAutoPurchase = $('btn-auto-purchase');
+if (btnAutoPurchase) {
+  btnAutoPurchase.addEventListener('click', () => {
+    if (player.coins >= 50 && !player.autoClick) {
+      player.coins -= 50;
+      player.autoClick = true;
+      player.upgrades.autoPurchased = true;
+      startAutoClick();
+      showMsg('Авто-крот активирован! 🤖');
+      updateUI();
+      saveGame();
+    } else if (player.autoClick) {
+      showMsg('Уже куплено!');
+    } else {
+      showMsg('Недостаточно монет!');
+    }
+  });
+}
 
 // Увеличение урона автоклика
-$('btn-auto-damage').addEventListener('click', () => {
-  const cost = getAutoDamageCost();
-  if (player.coins >= cost) {
-    player.coins -= cost;
-    player.autoClickDamage += 1;
-    player.upgrades.autoDamage++;
-    showMsg(`+1 урон автоклика! 💥`);
-    updateUI();
-    saveGame();
-  }
-});
+const btnAutoDamage = $('btn-auto-damage');
+if (btnAutoDamage) {
+  btnAutoDamage.addEventListener('click', () => {
+    const cost = getAutoDamageCost();
+    if (player.coins >= cost) {
+      player.coins -= cost;
+      player.autoClickDamage += 1;
+      player.upgrades.autoDamage++;
+      showMsg(`+${player.autoClickDamage - 1} → +${player.autoClickDamage} 💥`, 'green');
+      updateUI();
+      saveGame();
+    }
+  });
+}
 
-// Увеличение скорости автоклика (уменьшаем интервал)
-$('btn-auto-speed').addEventListener('click', () => {
-  const cost = getAutoSpeedCost();
-  if (player.coins >= cost) {
-    player.coins -= cost;
-    player.autoClickInterval = Math.max(100, player.autoClickInterval - 100); // мин. 100 мс
-    player.upgrades.autoSpeed++;
-    clearInterval(autoInterval); // перезапускаем
-    startAutoClick();
-    showMsg(`Скорость автоклика увеличена! ⚡`);
-    updateUI();
-    saveGame();
-  }
-});
+// Увеличение скорости автоклика
+const btnAutoSpeed = $('btn-auto-speed');
+if (btnAutoSpeed) {
+  btnAutoSpeed.addEventListener('click', () => {
+    const cost = getAutoSpeedCost();
+    if (player.coins >= cost) {
+      player.coins -= cost;
+      player.autoClickInterval = Math.max(100, player.autoClickInterval - 100);
+      player.upgrades.autoSpeed++;
+      clearInterval(autoInterval);
+      startAutoClick();
+      showMsg(`Скорость + ⚡ (${(1000 / player.autoClickInterval).toFixed(1)}/сек)`, 'green');
+      updateUI();
+      saveGame();
+    }
+  });
+}
+
+// Увеличение урона ручного клика
+const btnDamage = $('btn-damage');
+if (btnDamage) {
+  btnDamage.addEventListener('click', () => {
+    const cost = getDamageCost();
+    if (player.coins >= cost) {
+      player.coins -= cost;
+      player.damage += 1;
+      player.upgrades.damage++;
+      showMsg(`+${player.damage} 💪`, 'green');
+      updateUI();
+      saveGame();
+    }
+  });
+}
+
+// === ЦЕНЫ ===
+function getDamageCost() {
+  return 5 + player.upgrades.damage * 10;
+}
 
 function getAutoDamageCost() {
   return 100 + player.upgrades.autoDamage * 50;
@@ -131,8 +180,10 @@ function startAutoClick() {
 
 // === РУЧНОЙ КЛИК ===
 const krot = $('krot');
-krot.addEventListener('touchstart', onHit, { passive: false });
-krot.addEventListener('click', onHit);
+if (krot) {
+  krot.addEventListener('touchstart', onHit, { passive: false });
+  krot.addEventListener('click', onHit);
+}
 
 function onHit(e) {
   if (!soundsEnabled) enableSounds();
@@ -140,11 +191,11 @@ function onHit(e) {
   player.coins += player.damage;
   player.level = Math.floor(Math.log2(player.coins + 1)) + 1;
 
-  // Эффект
+  // ✅ Эффект: показываем +урон
   const click = document.createElement('div');
   click.className = 'click-effect';
   const rect = krot.getBoundingClientRect();
-  click.textContent = `-${player.damage}`;
+  click.textContent = `+${player.damage}`;  // ✅ Заменили "-" на "+"
   click.style.left = `${rect.left + rect.width / 2 - 30}px`;
   click.style.top = `${rect.top + rect.height / 2 - 30}px`;
   document.body.appendChild(click);
@@ -173,12 +224,15 @@ function playSound(src, vol = 1) {
   } catch (err) {}
 }
 
-// === СООБЩЕНИЯ ===
-function showMsg(text) {
+// === СООБЩЕНИЯ (с цветом) ===
+function showMsg(text, color = 'yellow') {
   const msg = $('message');
-  msg.textContent = text;
-  msg.classList.add('visible');
-  setTimeout(() => msg.classList.remove('visible'), 1500);
+  if (msg) {
+    msg.textContent = text;
+    msg.style.color = color;
+    msg.classList.add('visible');
+    setTimeout(() => msg.classList.remove('visible'), 1500);
+  }
 }
 
 // === TELEGRAM ===
