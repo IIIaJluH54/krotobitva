@@ -23,11 +23,24 @@
 
     <!-- Улучшения -->
     <div class="upgrade-panel">
+      <!-- Покупка автокрота (только 1 раз) -->
+      <button id="btn-auto-purchase" class="upgrade-btn">
+        Купить Авто-крот (50)
+      </button>
+
+      <!-- Улучшения после покупки -->
+      <div id="upgrade-auto" style="display: none;">
+        <button id="btn-auto-damage" class="upgrade-btn">
+          Увеличить урон автоклика (<span id="auto-damage-cost">100</span>)
+        </button>
+        <button id="btn-auto-speed" class="upgrade-btn">
+          Ускорить автоклик (<span id="auto-speed-cost">150</span>)
+        </button>
+      </div>
+
+      <!-- Урон от ручного клика -->
       <button id="btn-damage" class="upgrade-btn">
         Увеличить урон (<span id="damage-cost">5</span>)
-      </button>
-      <button id="btn-auto" class="upgrade-btn">
-        Автоклик (<span id="auto-cost">50</span>)
       </button>
     </div>
 
