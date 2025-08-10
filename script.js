@@ -1,117 +1,102 @@
-// Инициализация Telegram WebApp
-const tg = window.Telegram?.WebApp;
-tg.expand(); // раскрыть на весь экран
+// === Крото Битва — Улучшенная версия ===
 
-// Данные игрока
 let player = {
   carrots: 0,
   damage: 1,
-  level: 1,
   autoClick: false,
+  autoClickLevel: 0,
+  level: 1,
+  upgrades: {
+    damage: 0,
+    auto: 0
+  }
 };
 
-// DOM элементы
-const $ = (id) => document.getElementById(id);
-const carrotsEl = $('carrots');
-const damageEl = $('damage');
-const levelEl = $('level');
-const krotBtn = $('krot');
-const upgradeDamageBtn = $('upgrade-damage');
-const unlockAutoBtn = $('unlock-autoclick');
-const messageEl = $('message');
+const $ = id => document.getElementById(id);
+const save = () => localStorage.setItem('krotobitva', JSON.stringify(player));
+const load = () => {
+  const data = localStorage.getItem('krotobitva');
+  if (data) Object.assign(player, JSON.parse(data));
+};
 
-// Загрузка прогресса
-function loadGame() {
-  const saved = localStorage.getItem('krotobitva');
-  if (saved) {
-    player = JSON.parse(saved);
-    updateUI();
-  }
-  checkUpgrades();
-}
-
-// Сохранение
-function saveGame() {
-  localStorage.setItem('krotobitva', JSON.stringify(player));
-  if (tg) tg.MainButton.text = `Морковки: ${player.carrots}`;
-}
-
-// Обновление интерфейса
-function updateUI() {
-  carrotsEl.textContent = player.carrots;
-  damageEl.textContent = player.damage;
-  levelEl.textContent = player.level;
-  unlockAutoBtn.disabled = player.carrots < 50 || player.autoClick;
-}
-
-// Показ сообщения
-function showMsg(text, time = 2000) {
-  messageEl.textContent = text;
-  setTimeout(() => (messageEl.textContent = ''), time);
-}
+// UI
+const updateUI = () => {
+  $('carrots').textContent = Math.floor(player.carrots);
+  $('damage').textContent = player.damage;
+  $('level').textContent = player.level;
+  $('btn-damage').disabled = player.carrots < getDamageCost();
+  $('btn-auto').disabled = player.carrots < getAutoCost();
+};
 
 // Клик по кроту
-krotBtn.addEventListener('click', () => {
+$('krot').addEventListener('click', () => {
   player.carrots += player.damage;
   player.level = Math.floor(Math.log2(player.carrots + 1)) + 1;
+
+  // Анимация клика
+  const click = document.createElement('div');
+  click.className = 'click-effect';
+  click.textContent = `-${player.damage}`;
+  click.style.left = `${event.clientX - 50}px`;
+  click.style.top = `${event.clientY - 100}px`;
+  document.body.appendChild(click);
+  setTimeout(() => click.remove(), 1000);
+
   updateUI();
-  saveGame();
-
-  // Эффект вибрации (на поддерживаемых устройствах)
-  if (navigator.vibrate) navigator.vibrate(10);
-
-  showMsg(`+${player.damage} морковки!`, 800);
+  save();
 });
 
-// Улучшение урона
-upgradeDamageBtn.addEventListener('click', () => {
-  if (player.carrots >= 5) {
-    player.carrots -= 5;
+// Улучшения
+function getDamageCost() {
+  return 5 + player.upgrades.damage * 10;
+}
+
+function getAutoCost() {
+  return 50 + player.upgrades.auto * 100;
+}
+
+$('btn-damage').addEventListener('click', () => {
+  const cost = getDamageCost();
+  if (player.carrots >= cost) {
+    player.carrots -= cost;
     player.damage += 1;
+    player.upgrades.damage++;
+    showMsg(`+1 урон!`);
     updateUI();
-    saveGame();
-    showMsg('Когти усилены! 💪');
-  } else {
-    showMsg('Не хватает морковок!');
+    save();
   }
 });
 
-// Автоклик
-unlockAutoBtn.addEventListener('click', () => {
-  if (player.carrots >= 50 && !player.autoClick) {
-    player.carrots -= 50;
-    player.autoClick = true;
-    unlockAutoBtn.disabled = true;
-    startAutoClick();
+$('btn-auto').addEventListener('click', () => {
+  const cost = getAutoCost();
+  if (player.carrots >= cost) {
+    player.carrots -= cost;
+    if (!player.autoClick) startAutoClick();
+    player.autoClickLevel++;
+    player.upgrades.auto++;
+    showMsg(`Авто-крот активирован! 🤖`);
     updateUI();
-    saveGame();
-    showMsg('Автоклик активирован! 🤖');
+    save();
   }
 });
 
 function startAutoClick() {
   setInterval(() => {
-    if (player.autoClick) {
+    if (player.autoClickLevel > 0) {
       player.carrots += player.damage;
       player.level = Math.floor(Math.log2(player.carrots + 1)) + 1;
       updateUI();
-      saveGame();
+      save();
     }
   }, 1000);
 }
 
-// Проверка доступности улучшений
-function checkUpgrades() {
-  unlockAutoBtn.disabled = player.carrots < 50 || player.autoClick;
+function showMsg(text) {
+  const msg = $('message');
+  msg.textContent = text;
+  setTimeout(() => msg.textContent = '', 1500);
 }
 
-// Запуск
-loadGame();
-checkUpgrades();
-if (player.autoClick) startAutoClick();
-
-// Настройка кнопки в Telegram
-if (tg) {
-  tg.MainButton.setText('Сохранить').show();
-  tg.MainButton.onClick(saveGame);
-}
+// Загрузка
+load();
+updateUI();
