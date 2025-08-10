@@ -2,49 +2,40 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Крото Битва</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Крото Битва — Полная версия</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
   <div class="game-container">
-    <!-- Статистика -->
     <div class="stats-bar">
       <div class="stat"><strong>🪙</strong> <span id="coins">0</span></div>
-      <div class="stat"><strong>💥</strong> <span id="damage">1</span></div>
       <div class="stat"><strong>⚡</strong> <span id="level">1</span></div>
+      <button id="toggle-tasks" class="task-toggle" title="Задания дня">📜</button>
     </div>
 
-    <!-- Крот -->
+    <div class="hp-bar-container">
+      <div class="hp-text" id="hp-text">HP: 0/0</div>
+      <div class="hp-bar-bg">
+        <div class="hp-bar" id="hp-bar"></div>
+      </div>
+      <div class="boss-label" id="boss-label" style="display:none;">БОСС УРОВНЯ</div>
+    </div>
+
+    <div id="tasks-panel" class="tasks-panel" style="display:none;">
+      <div class="tasks-header">
+        <h3>Задания дня</h3>
+        <button id="refresh-tasks" class="refresh-btn" title="Обновить задания">🔁</button>
+      </div>
+      <div id="tasks-list" class="tasks-list"></div>
+    </div>
+
     <div class="krot-click" id="krot">
       <img src="assets/krot.png" alt="Крот" />
     </div>
 
-    <!-- Улучшения -->
-    <div class="upgrade-panel">
-      <!-- Покупка автокрота (только 1 раз) -->
-      <button id="btn-auto-purchase" class="upgrade-btn">
-        Купить Авто-крот (50)
-      </button>
-
-      <!-- Улучшения после покупки -->
-      <div id="upgrade-auto" style="display: none;">
-        <button id="btn-auto-damage" class="upgrade-btn">
-          Увеличить урон автоклика (<span id="auto-damage-cost">100</span>)
-        </button>
-        <button id="btn-auto-speed" class="upgrade-btn">
-          Ускорить автоклик (<span id="auto-speed-cost">150</span>)
-        </button>
-      </div>
-
-      <!-- Урон от ручного клика -->
-      <button id="btn-damage" class="upgrade-btn">
-        Увеличить урон (<span id="damage-cost">5</span>)
-      </button>
-    </div>
-
-    <!-- Сообщения -->
+    <div id="notif" class="notification" style="display:none;"></div>
     <div class="message" id="message"></div>
   </div>
 
