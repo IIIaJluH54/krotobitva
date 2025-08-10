@@ -83,4 +83,18 @@ h1 {
   font-size: 14px;
   color: #f39c12;
   min-height: 20px;
+
+}
+.click-effect {
+  position: fixed;
+  pointer-events: none;
+  color: #f39c12;
+  font-weight: bold;
+  font-size: 20px;
+  animation: float-up 1s ease-out forwards;
+}
+
+@keyframes float-up {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-50px); }
 }
