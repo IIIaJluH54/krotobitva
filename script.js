@@ -1,4 +1,4 @@
-// === Крото Битва — Адаптивная версия ===
+// === Крото Битва — Полностью исправленная версия ===
 
 let player = {
   carrots: 0,
@@ -11,23 +11,24 @@ let player = {
 
 const $ = id => document.getElementById(id);
 
-// Загрузка прогресса
 function loadGame() {
   const saved = localStorage.getItem('krotobitva');
   if (saved) Object.assign(player, JSON.parse(saved));
   updateUI();
 }
 
-// Сохранение
 function saveGame() {
   localStorage.setItem('krotobitva', JSON.stringify(player));
 }
 
-// Обновление интерфейса
 function updateUI() {
   $('carrots').textContent = Math.floor(player.carrots);
   $('damage').textContent = player.damage;
   $('level').textContent = player.level;
+
+  // Обновляем цены улучшений
+  $('damage-cost').textContent = getDamageCost();
+  $('auto-cost').textContent = getAutoCost();
 
   $('btn-damage').disabled = player.carrots < getDamageCost();
   $('btn-auto').disabled = player.carrots < getAutoCost();
@@ -68,8 +69,10 @@ $('krot').addEventListener('click', (e) => {
   } catch (err) {}
 
   // Вибрация (на поддерживаемых устройствах)
-  if (navigator.vibrate) {
-    navigator.vibrate(10);
+  if ('vibrate' in navigator && navigator.vibrate) {
+    navigator.vibrate([50, 50, 50]);
+  } else if ('mozVibrate' in navigator && navigator.mozVibrate) {
+    navigator.mozVibrate(50);
   }
 
   updateUI();
