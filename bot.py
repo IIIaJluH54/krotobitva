@@ -10,7 +10,7 @@ if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN не найден в Secrets!")
 
 # 🔗 Замени на свой URL после публикации
-GAME_URL = "https://krotobitva.yourname.repl.co"
+GAME_URL = "https://iiiajluh54.github.io/krotobitva/"
 
 # Инициализация
 bot = Bot(token=BOT_TOKEN)
