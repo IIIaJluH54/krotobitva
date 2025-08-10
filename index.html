@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Крото Битва</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Подключаем Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Крото Битва 🕳️</h1>
+
+    <div class="player-stats">
+      <p>Урон: <span id="damage">1</span></p>
+      <p>Морковки: <span id="carrots">0</span></p>
+      <p>Уровень: <span id="level">1</span></p>
+    </div>
+
+    <div class="krot-click" id="krot">
+      <img src="assets/krot.png" alt="Крот" />
+    </div>
+
+    <div class="upgrade-panel">
+      <h2>Улучшения</h2>
+      <button id="upgrade-damage" class="upgrade-btn">Увеличить урон (5 морковок)</button>
+      <button id="unlock-autoclick" class="upgrade-btn" disabled>
+        Автоклик (50 морковок)
+      </button>
+    </div>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
