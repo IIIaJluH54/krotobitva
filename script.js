@@ -1,4 +1,4 @@
-// Исправленная версия script.js — валидация загрузки, throttled save, предохранители на авто-клик и звуки.
+// Исправленная версия script.js с фиксом NaN на кнопках апгрейда
 
 let player = {
   coins: 0,
@@ -18,10 +18,8 @@ let player = {
 
 const $ = id => document.getElementById(id);
 
-// --- Валидация загруженных данных ---
 function validateLoaded(data) {
   if (typeof data !== 'object' || data === null) return false;
-  // Проверяем ключевые поля и типы
   const numFields = ['coins', 'damage', 'autoClickDamage', 'autoClickInterval', 'level', 'lastUpdate'];
   for (const f of numFields) {
     if (!(f in data) || typeof data[f] !== 'number' || !isFinite(data[f])) return false;
@@ -31,7 +29,6 @@ function validateLoaded(data) {
   return true;
 }
 
-// --- Загрузка/сохранение (throttle) ---
 let saveTimeout = null;
 function scheduleSave(delay = 1500) {
   if (saveTimeout) clearTimeout(saveTimeout);
@@ -49,7 +46,6 @@ function saveGameImmediate() {
 }
 
 function saveGame() {
-  // Планируем отложенное сохранение, чтобы не дергать localStorage слишком часто
   scheduleSave(1200);
 }
 
@@ -60,15 +56,17 @@ function loadGame() {
       const data = JSON.parse(saved);
       if (validateLoaded(data)) {
         Object.assign(player, data);
-        // Приведение типов и диапазонов
+        if (!player.upgrades) player.upgrades = {};
+        if (typeof player.upgrades.autoDamage !== 'number') player.upgrades.autoDamage = 0;
+        if (typeof player.upgrades.autoSpeed !== 'number') player.upgrades.autoSpeed = 0;
+        if (typeof player.upgrades.damage !== 'number') player.upgrades.damage = 0;
+        if (typeof player.upgrades.autoPurchased !== 'boolean') player.upgrades.autoPurchased = false;
         player.coins = Math.max(0, Number(player.coins));
         player.damage = Math.max(1, Math.floor(Number(player.damage)));
-        player.autoClickInterval = Math.max(300, Math.floor(Number(player.autoClickInterval))); // min 300ms
+        player.autoClickInterval = Math.max(300, Math.floor(Number(player.autoClickInterval)));
         player.autoClickDamage = Math.max(1, Math.floor(Number(player.autoClickDamage)));
         player.level = Math.max(1, Math.floor(Number(player.level)));
         player.lastUpdate = Date.now();
-      } else {
-        console.warn("Данные сохранения не прошли валидацию, сбрасываем.");
       }
     } catch (e) {
       console.warn("Ошибка чтения сохранения:", e);
@@ -78,42 +76,37 @@ function loadGame() {
   if (player.autoClick) startAutoClick();
 }
 
-// --- UI ---
 function updateUI() {
-  const coinsEl = $('coins');
-  if (coinsEl) coinsEl.textContent = Math.floor(player.coins);
+  $('coins').textContent = Math.floor(player.coins);
+  $('damage').textContent = player.damage;
+  $('level').textContent = player.level;
 
-  const damageEl = $('damage');
-  if (damageEl) damageEl.textContent = player.damage;
+  const autoDamageCost = getAutoDamageCost();
+  const autoSpeedCost = getAutoSpeedCost();
 
-  const levelEl = $('level');
-  if (levelEl) levelEl.textContent = player.level;
-
-  const upgradeAuto = $('upgrade-auto');
-  const btnAutoPurchaseEl = $('btn-auto-purchase');
-  if (upgradeAuto && btnAutoPurchaseEl) {
-    upgradeAuto.style.display = player.autoClick ? 'block' : 'none';
-    btnAutoPurchaseEl.style.display = player.autoClick ? 'none' : 'block';
-  }
-
-  const autoDamageCost = $('auto-damage-cost');
-  const autoSpeedCost = $('auto-speed-cost');
-  const damageCost = $('damage-cost');
-
-  if (autoDamageCost) autoDamageCost.textContent = getAutoDamageCost();
-  if (autoSpeedCost) autoSpeedCost.textContent = getAutoSpeedCost();
-  if (damageCost) damageCost.textContent = getDamageCost();
+  const costElAD = $('auto-damage-cost');
+  const costElAS = $('auto-speed-cost');
+  if (costElAD) costElAD.textContent = autoDamageCost;
+  if (costElAS) costElAS.textContent = autoSpeedCost;
 
   const btnAutoDamage = $('btn-auto-damage');
-  const btnAutoSpeed = $('btn-auto-speed');
-  const btnDamage = $('btn-damage');
+  if (btnAutoDamage) {
+    btnAutoDamage.textContent = `Увеличить урон автоклика (${autoDamageCost})`;
+    btnAutoDamage.disabled = player.coins < autoDamageCost;
+  }
 
-  if (btnAutoDamage) btnAutoDamage.disabled = player.coins < getAutoDamageCost();
-  if (btnAutoSpeed) btnAutoSpeed.disabled = player.coins < getAutoSpeedCost();
-  if (btnDamage) btnDamage.disabled = player.coins < getDamageCost();
+  const btnAutoSpeed = $('btn-auto-speed');
+  if (btnAutoSpeed) {
+    btnAutoSpeed.textContent = `Ускорить автоклик (${autoSpeedCost})`;
+    btnAutoSpeed.disabled = player.coins < autoSpeedCost;
+  }
+
+  const btnDamage = $('btn-damage');
+  if (btnDamage) {
+    btnDamage.disabled = player.coins < getDamageCost();
+  }
 }
 
-// --- Цены ---
 function getDamageCost() {
   return 5 + player.upgrades.damage * 10;
 }
@@ -126,13 +119,10 @@ function getAutoSpeedCost() {
   return 150 + player.upgrades.autoSpeed * 75;
 }
 
-// --- АВТОКЛИК ---
 let autoInterval = null;
 function startAutoClick() {
   if (!player.autoClick) return;
   if (autoInterval) clearInterval(autoInterval);
-
-  // Ограничение минимальной частоты (во избежание перегруза)
   const interval = Math.max(300, Math.floor(player.autoClickInterval));
   autoInterval = setInterval(() => {
     if (player.autoClick) {
@@ -151,10 +141,8 @@ function stopAutoClick() {
   }
 }
 
-// --- РУЧНОЙ КЛИК ---
 const krot = $('krot');
 if (krot) {
-  // оптимизация: один слушатель, поддержка touch и mouse
   krot.addEventListener('touchstart', onHit, { passive: true });
   krot.addEventListener('click', onHit);
 }
@@ -162,7 +150,6 @@ if (krot) {
 let lastClickTs = 0;
 function onHit(e) {
   const now = Date.now();
-  // простой дебаунс — 30ms
   if (now - lastClickTs < 30) return;
   lastClickTs = now;
 
@@ -171,7 +158,6 @@ function onHit(e) {
   player.coins += player.damage;
   player.level = Math.floor(Math.log2(player.coins + 1)) + 1;
 
-  // Эффект клика
   const click = document.createElement('div');
   click.className = 'click-effect';
   const rect = krot.getBoundingClientRect();
@@ -189,8 +175,6 @@ function onHit(e) {
   updateUI();
 }
 
-// --- ЗВУКИ ---
-// Пул аудио — переиспользуем один элемент, чтобы не создавать много объектов
 let soundsEnabled = false;
 let clickAudio = null;
 
@@ -199,7 +183,6 @@ function enableSounds() {
   soundsEnabled = true;
   try {
     clickAudio = new Audio('assets/click.mp3');
-    // Попытка "подготовить" аудио (может быть заблокирована), не критично
     clickAudio.volume = 0.3;
     const p = clickAudio.play();
     if (p && p.then) p.then(() => { clickAudio.pause(); clickAudio.currentTime = 0; }).catch(() => {});
@@ -212,23 +195,17 @@ function playSound(src, vol = 1) {
   try {
     if (!soundsEnabled) return;
     if (clickAudio && clickAudio.src && clickAudio.paused !== undefined) {
-      clickAudio.volume = vol;
-      // клонируем элемент, чтобы можно было играть наложениями
       const clone = clickAudio.cloneNode();
       clone.volume = vol;
       clone.play().catch(() => {});
       return;
     }
-    // fallback
     const s = new Audio(src);
     s.volume = vol;
     s.play().catch(() => {});
-  } catch (err) {
-    // silent
-  }
+  } catch (err) {}
 }
 
-// --- СООБЩЕНИЯ ---
 function showMsg(text, color = 'yellow') {
   const msg = $('message');
   if (msg) {
@@ -239,7 +216,6 @@ function showMsg(text, color = 'yellow') {
   }
 }
 
-// --- КНОПКИ УЛУЧШЕНИЙ ---
 const btnAutoPurchase = $('btn-auto-purchase');
 if (btnAutoPurchase) {
   btnAutoPurchase.addEventListener('click', () => {
@@ -280,7 +256,6 @@ if (btnAutoSpeed) {
     const cost = getAutoSpeedCost();
     if (player.coins >= cost) {
       player.coins -= cost;
-      // уменьшаем интервал, но не ниже 300мс
       player.autoClickInterval = Math.max(300, player.autoClickInterval - 100);
       player.upgrades.autoSpeed++;
       stopAutoClick();
@@ -307,7 +282,6 @@ if (btnDamage) {
   });
 }
 
-// --- TELEGRAM WEB APP INTEGRATION ---
 if (window.Telegram?.WebApp) {
   try {
     window.Telegram.WebApp.expand();
@@ -317,10 +291,8 @@ if (window.Telegram?.WebApp) {
   }
 }
 
-// --- ЗАГРУЗКА/ВЫГРУЗКА ---
 document.addEventListener('DOMContentLoaded', loadGame);
 window.addEventListener('beforeunload', () => {
-  // принудительное сохранение перед уходом
   if (saveTimeout) {
     clearTimeout(saveTimeout);
     saveGameImmediate();
