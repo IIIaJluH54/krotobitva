@@ -270,7 +270,7 @@ function onHit(e) {
   if (enemy.hp <= 0) {
     // visual: death
     try{ playDeathAnimation(enemy.isBoss); }catch(e){}
-    try{ spawnCoinsEffect(enemy.maxHP/30); }catch(e){}
+    try{ spawnCoinsEffect(Math.min(12, Math.max(6, Math.floor(enemy.maxHP/30)))); }catch(e){}
     try{ animateCoinJump(); }catch(e){}
     if (enemy.isBoss) try{ shakeScreen(); }catch(e){}
 
@@ -368,12 +368,18 @@ function showNotification(text, ms=1500) {
 // --- Audio ---
 let soundsEnabled = false;
 let clickAudio = null;
+let hitAudio = null;
+let deathAudio = null;
 function enableSounds() {
   if (soundsEnabled) return;
   soundsEnabled = true;
   try {
     clickAudio = new Audio('assets/click.mp3');
-    clickAudio.volume = 0.3;
+    clickAudio.volume = 0.2;
+    hitAudio = new Audio('assets/zvuk-udara2.mp3');
+    hitAudio.volume = 0.7;
+    deathAudio = new Audio('assets/смерть.mp3');
+    deathAudio.volume = 0.8;
     const p = clickAudio.play();
     if (p && p.then) p.then(() => { clickAudio.pause(); clickAudio.currentTime = 0; }).catch(()=>{});
   } catch (e) { console.warn('Audio init failed', e); }
@@ -431,11 +437,12 @@ function triggerHitAnimation(isBoss) {
   let flash = krotEl.querySelector('.krot-flash');
   if (!flash) { flash = document.createElement('div'); flash.className='krot-flash'; krotEl.style.position='relative'; krotEl.appendChild(flash); }
   flash.style.opacity = '1';
-  setTimeout(()=> flash.style.opacity='0', 120);
+  setTimeout(()=> flash.style.opacity='0', 260);
 
   // small lift
   krotEl.classList.add('krot-hit');
-  setTimeout(()=> krotEl.classList.remove('krot-hit'), 140);
+  setTimeout(()=> krotEl.classList.remove('krot-hit'), 260);
+  try{ if(hitAudio){ hitAudio.currentTime=0; hitAudio.play().catch(()=>{}); } }catch(e){}
 }
 
 function playDeathAnimation(isBoss) {
@@ -456,7 +463,8 @@ function playDeathAnimation(isBoss) {
   const img = krotEl.querySelector('img');
   if (img) {
     img.classList.add('krot-death');
-    setTimeout(()=> { img.classList.remove('krot-death'); }, 700);
+    setTimeout(()=> { img.classList.remove('krot-death'); }, 1000);
+    try{ if(deathAudio){ deathAudio.currentTime=0; deathAudio.play().catch(()=>{}); } }catch(e){}
   }
 }
 
@@ -502,7 +510,7 @@ function initParticles() {
   const wrap = $('particles');
   if (!wrap) return;
   wrap.innerHTML='';
-  const count = 22;
+  const count = 40;
   const w = window.innerWidth, h = window.innerHeight;
   for (let i=0;i<count;i++) {
     const p = document.createElement('div');
