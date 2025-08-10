@@ -53,10 +53,10 @@ body {
 .krot-click {
   flex: 1;
   margin: 1.5rem 0;
-  width: 60vw;
-  max-width: 200px;
-  height: 60vw;
-  max-height: 200px;
+  width: 70vw; /* Увеличили до 70% ширины экрана */
+  max-width: 250px;
+  height: 70vw;
+  max-height: 250px;
   cursor: pointer;
   transition: transform 0.1s ease;
   border-radius: 50%;
@@ -68,8 +68,8 @@ body {
 }
 
 .krot-click img {
-  width: 90%;
-  height: 90%;
+  width: 95%;
+  height: 95%;
   object-fit: contain;
   transition: transform 0.2s;
 }
@@ -158,8 +158,8 @@ body {
   }
 
   .krot-click {
-    width: 250px;
-    height: 250px;
+    width: 300px;
+    height: 300px;
   }
 
   .upgrade-btn {
@@ -181,8 +181,8 @@ body {
   }
 
   .krot-click {
-    width: 50vw;
-    height: 50vw;
+    width: 60vw;
+    height: 60vw;
     max-width: 150px;
     max-height: 150px;
   }
