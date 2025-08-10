@@ -1,11 +1,9 @@
-/* Обнуление */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Базовые стили */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: #1a2b3c;
@@ -17,7 +15,6 @@ body {
   touch-action: manipulation;
 }
 
-/* Адаптивный контейнер */
 .game-container {
   max-width: 100%;
   padding: 1rem;
@@ -29,7 +26,7 @@ body {
   padding-top: 2rem;
 }
 
-/* Панель статистики — фиксирована сверху на мобильных */
+/* Панель статистики */
 .stats-bar {
   width: 100%;
   max-width: 500px;
@@ -39,7 +36,7 @@ body {
   padding: 0.8rem 0;
   border-radius: 12px;
   margin-bottom: 2rem;
-  font-size: 1rem;
+  font-size: 1.1rem;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -49,14 +46,14 @@ body {
   font-size: 1.1rem;
 }
 
-/* Крот — масштабируется под экран */
+/* Контейнер с кротом — увеличен, без пробелов */
 .krot-click {
   flex: 1;
   margin: 1.5rem 0;
-  width: 70vw; /* Увеличили до 70% ширины экрана */
-  max-width: 250px;
-  height: 70vw;
-  max-height: 250px;
+  width: 80vw;
+  max-width: 300px;
+  height: 80vw;
+  max-height: 300px;
   cursor: pointer;
   transition: transform 0.1s ease;
   border-radius: 50%;
@@ -68,9 +65,10 @@ body {
 }
 
 .krot-click img {
-  width: 95%;
-  height: 95%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   transition: transform 0.2s;
 }
 
@@ -78,7 +76,7 @@ body {
   transform: scale(0.9);
 }
 
-/* Улучшения */
+/* Панель улучшений */
 .upgrade-panel {
   width: 100%;
   max-width: 400px;
@@ -147,48 +145,20 @@ body {
   100% { opacity: 0; transform: translateY(-50px); }
 }
 
-/* Адаптация под планшеты и десктоп */
+/* Адаптация под большие экраны */
 @media (min-width: 768px) {
-  .game-container {
-    padding: 2rem;
-  }
-
-  .stats-bar {
-    font-size: 1.2rem;
-  }
-
   .krot-click {
     width: 300px;
     height: 300px;
   }
-
-  .upgrade-btn {
-    font-size: 1.2rem;
-    padding: 1.2rem;
-  }
 }
 
-/* Для очень маленьких экранов */
+/* Для маленьких экранов */
 @media (max-height: 600px) {
-  .game-container {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-  }
-
-  .stats-bar {
-    font-size: 0.9rem;
-    padding: 0.6rem 0;
-  }
-
   .krot-click {
-    width: 60vw;
-    height: 60vw;
-    max-width: 150px;
-    max-height: 150px;
-  }
-
-  .upgrade-btn {
-    padding: 0.8rem;
-    font-size: 1rem;
+    width: 70vw;
+    height: 70vw;
+    max-width: 200px;
+    max-height: 200px;
   }
 }
